@@ -51,14 +51,20 @@ if colaboradores:
 col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
 with col_logo:
     if os.path.exists("logo PR (3) (2).png"):
-        st.image('logo PR (3) (2).png', width=250)
+        st.image("logo PR (3) (2).png", width=250)
+    else:
+        st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
+
 with col_titulo:
     st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
     if nome_cliente:
         st.markdown(f"<h3 style='text-align: center; color: #555555;'>Cliente: {nome_cliente}</h3>", unsafe_allow_html=True)
+
 with col_logo_cliente:
     if os.path.exists("cliente_logo_temp.png"):
-        st.image('cliente_logo_temp.png', width=150)
+        st.image("cliente_logo_temp.png", width=150)
+    else:
+        st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
 
 # CRIAÇÃO DAS ABAS
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
