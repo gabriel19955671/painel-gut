@@ -70,12 +70,31 @@ with col_logo_cliente:
     else:
         st.markdown("<div style='height: 50px;'></div>", unsafe_allow_html=True)
 
-# INSTRUÇÕES
-st.subheader("🧾 Instruções Pós-Diagnóstico")
-instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
-imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
-if imagem_instrucao:
-    with open("instrucao_img_temp.png", "wb") as f:
-        f.write(imagem_instrucao.read())
-    st.image("instrucao_img_temp.png", width=400)
-st.session_state['instrucoes_digitadas'] = instrucoes
+# CRIAÇÃO DAS ABAS
+aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs(["📊 Gráfico Radar", "🗂️ Matriz GUT", "📝 Plano de Ação", "📥 Exportar PDF", "🧾 Instruções", "✨ Gráficos Especiais"])
+
+# (demais abas existentes continuam iguais)
+
+# ABA 6 - Gráficos Especiais
+with aba6:
+    st.subheader("✨ Gráficos Especiais")
+
+    st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
+    top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+    fig_top10 = go.Figure(go.Bar(
+        x=top10['Score'],
+        y=top10['Problema'],
+        orientation='h',
+        marker_color='crimson'
+    ))
+    fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
+    st.plotly_chart(fig_top10, use_container_width=True)
+
+    st.markdown("#### 📈 Evolução Média das Avaliações por Área")
+    media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
+    fig_linha = go.Figure()
+    for dep in media_por_area['Departamento'].unique():
+        df_dep = media_por_area[media_por_area['Departamento'] == dep]
+        fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
+    fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
+    st.plotly_chart(fig_linha, use_container_width=True)
