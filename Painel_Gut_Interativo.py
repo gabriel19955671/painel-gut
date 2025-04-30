@@ -70,6 +70,9 @@ with aba1:
     fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), showlegend=False)
     st.plotly_chart(fig_radar, use_container_width=True)
 
+    st.markdown("#### 📋 Tabela de Avaliações por Área")
+    st.dataframe(df_agrupado, use_container_width=True)
+
 # ABA 2 - Matriz GUT
 with aba2:
     st.subheader("Matriz GUT")
@@ -83,6 +86,9 @@ with aba2:
     )])
     fig_gut.update_layout(title="Visualização Matriz GUT", xaxis_title="Urgência", yaxis_title="Gravidade")
     st.plotly_chart(fig_gut, use_container_width=True)
+
+    st.markdown("#### 📋 Tabela da Matriz GUT")
+    st.dataframe(df_gut, use_container_width=True)
 
 # ABA 3 - Plano de Ação
 with aba3:
@@ -99,15 +105,51 @@ with aba4:
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
 
+        # CAPA
+        pdf.add_page()
+        if os.path.exists("cliente_logo_temp.png"):
+            pdf.image("cliente_logo_temp.png", x=150, y=8, w=50)
+        pdf.set_font("Arial", 'B', 20)
+        pdf.ln(60)
+        pdf.cell(0, 15, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+        if nome_cliente:
+            pdf.set_font("Arial", '', 14)
+            pdf.ln(10)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True, align="C")
+
+        # Radar
         pdf.add_page()
         pdf.set_font("Arial", 'B', 16)
         pdf.cell(0, 10, "Radar de Avaliação", ln=True, align="C")
         pdf.image("radar_temp.png", x=10, w=180)
 
+        # GUT
         pdf.add_page()
         pdf.set_font("Arial", 'B', 16)
         pdf.cell(0, 10, "Matriz GUT", ln=True, align="C")
         pdf.image("gut_temp.png", x=10, w=180)
+
+        # Instruções
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Instruções Pós-Diagnóstico", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        if st.session_state.get('instrucoes_digitadas'):
+            for linha in st.session_state['instrucoes_digitadas'].split('
+'):
+                pdf.multi_cell(0, 10, linha)
+        else:
+            pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
+
+        # Rodapé
+        pdf.set_y(-15)
+        pdf.set_font("Arial", 'I', 10)
+        rodape = "Potencialize Resultados - Diagnóstico 360º"
+        if nome_cliente:
+            rodape += f" | Cliente: {nome_cliente}"
+        pdf.cell(0, 10, rodape, 0, 0, 'C')
 
         pdf.output("diagnostico_360.pdf")
         with open("diagnostico_360.pdf", "rb") as f:
