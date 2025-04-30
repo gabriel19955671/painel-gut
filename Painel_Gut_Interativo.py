@@ -79,7 +79,119 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "🧾 Instruções",
     "✨ Gráficos Especiais"])
 
-# (as abas de 1 a 5 continuam como estão no código anterior)
+# ABA 1 - Gráfico Radar
+with aba1:
+    st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
+    col1, col2, col3 = st.columns([3, 3, 4])
+    with col1:
+        departamentos = sorted(df_radar['Departamento'].unique())
+        depto_selecionado = st.multiselect("Departamento(s)", departamentos, default=departamentos)
+    with col2:
+        areas = sorted(df_radar['Área'].unique())
+        area_selecionada = st.multiselect("Área(s)", areas, default=areas)
+    with col3:
+        avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, (0.0, 10.0), step=0.1)
+
+    df_plot = df_radar[
+        (df_radar['Departamento'].isin(depto_selecionado)) &
+        (df_radar['Área'].isin(area_selecionada)) &
+        (df_radar['Avaliação'] >= avaliacao_min) &
+        (df_radar['Avaliação'] <= avaliacao_max)
+    ]
+
+    fig_radar = go.Figure()
+    if not df_plot.empty:
+        df_agrupado = df_plot.groupby('Área')['Avaliação'].mean().reset_index()
+        df_full = pd.DataFrame({'Área': df_radar['Área'].unique()})
+        df_full = df_full.merge(df_agrupado, on='Área', how='left').fillna(0)
+        fig_radar.add_trace(go.Scatterpolar(
+            r=df_full['Avaliação'],
+            theta=df_full['Área'],
+            mode='lines+markers+text',
+            fill='toself',
+            marker=dict(size=8, color='green'),
+            line=dict(color='green', width=3),
+            text=df_agrupado['Avaliação'].round(1).astype(str),
+            textposition="top center",
+            textfont=dict(size=16, color='black')
+        ))
+
+    fig_radar.update_layout(
+        polar=dict(
+            bgcolor="lavender",
+            radialaxis=dict(visible=True, range=[0, 10]),
+            angularaxis=dict(tickfont=dict(size=14))
+        ),
+        title=dict(text="Radar de Avaliação", font=dict(size=20)),
+        margin=dict(l=20, r=20, t=40, b=20),
+        height=600
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.subheader("Tabela de Pontuações Filtradas")
+    st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
+
+# ABA 2 - Matriz GUT
+with aba2:
+    st.subheader("Matriz GUT - Priorização das Dores")
+    st.dataframe(df_gut, use_container_width=True)
+
+    fig_gut = go.Figure(data=[go.Scatter(
+        x=df_gut['Urgência'],
+        y=df_gut['Gravidade'],
+        mode='markers+text',
+        text=df_gut['Problema'],
+        textposition="top center",
+        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds', showscale=True)
+    )])
+
+    fig_gut.update_layout(
+        title="Visualização Matriz GUT",
+        xaxis_title="Urgência",
+        yaxis_title="Gravidade",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
+    )
+    st.plotly_chart(fig_gut, use_container_width=True)
+
+# ABA 3 - Plano de Ação
+with aba3:
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    st.dataframe(df_plano, use_container_width=True)
+
+    if 'Prazo' in df_plano.columns:
+        prazo_counts = df_plano['Prazo'].value_counts().reset_index()
+        prazo_counts.columns = ['Prazo', 'Quantidade']
+
+        st.markdown("### 🥧 Distribuição das Ações por Prazo")
+        fig_pizza = go.Figure(data=[go.Pie(labels=prazo_counts['Prazo'], values=prazo_counts['Quantidade'], hole=0.4)])
+        st.plotly_chart(fig_pizza, use_container_width=True)
+
+        st.markdown("### 📊 Quantidade de Ações por Prazo para Conclusão")
+        fig_barras = go.Figure()
+        fig_barras.add_trace(go.Bar(
+            x=df_plano['Prazo'],
+            y=[1]*len(df_plano),
+            text=df_plano['Ação'],
+            textposition='outside'
+        ))
+        st.plotly_chart(fig_barras, use_container_width=True)
+
+# ABA 4 - Exportar PDF (placeholder)
+with aba4:
+    st.subheader("Exportar Diagnóstico 360º em PDF")
+    st.markdown("Botões de exportação e personalização serão adicionados aqui.")
+
+# ABA 5 - Instruções
+with aba5:
+    st.subheader("🧾 Instruções Pós-Diagnóstico")
+    instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
+    imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
+    if imagem_instrucao:
+        with open("instrucao_img_temp.png", "wb") as f:
+            f.write(imagem_instrucao.read())
+        st.image("instrucao_img_temp.png", width=400)
+    st.session_state['instrucoes_digitadas'] = instrucoes
+
 
 # ABA 6 - Gráficos Especiais
 with aba6:
