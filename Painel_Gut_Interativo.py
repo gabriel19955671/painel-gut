@@ -176,13 +176,117 @@ with aba3:
         ))
         st.plotly_chart(fig_barras, use_container_width=True)
 
-# ABA 4 - Exportar PDF (placeholder)
+# ABA 4 - Exportar PDF
 with aba4:
     st.subheader("Exportar Diagnóstico 360º em PDF")
-    st.markdown("Botões de exportação e personalização serão adicionados aqui.")
+    st.markdown("### Clique abaixo para exportar o relatório completo")
 
-# ABA 5 - Instruções
-with aba5:
+    if st.button("📥 Gerar PDF Completo"):
+        buf = BytesIO()
+        fig_radar.write_image("radar_temp.png")
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)
+
+        # CAPA
+        if os.path.exists("logo PR (3) (2).png"):
+            pdf.image("logo PR (3) (2).png", x=10, y=8, w=50)
+        if os.path.exists("cliente_logo_temp.png"):
+            pdf.image("cliente_logo_temp.png", x=150, y=8, w=50)
+        pdf.set_font("Arial", 'B', 20)
+        pdf.ln(60)
+        pdf.cell(0, 15, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+        if nome_cliente:
+            pdf.set_font("Arial", '', 14)
+            pdf.ln(10)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True, align="C")
+
+        # Radar
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Radar de Avaliação", ln=True, align="C")
+        pdf.image("radar_temp.png", x=10, y=None, w=180)
+
+        # GUT Table
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Matriz GUT - Priorização das Dores", ln=True, align="C")
+        pdf.set_font("Arial", '', 10)
+        col_gut = df_gut.columns.tolist()
+        for i in col_gut:
+            pdf.cell(190/len(col_gut), 10, i, border=1, align="C")
+        pdf.ln()
+        for _, row in df_gut.iterrows():
+            for i in col_gut:
+                pdf.cell(190/len(col_gut), 10, str(row[i]), border=1, align="C")
+            pdf.ln()
+
+        # Plano de Ação
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Plano de Ação - Estratégias de Melhoria", ln=True, align="C")
+        pdf.set_font("Arial", '', 10)
+        col_plano = df_plano.columns.tolist()
+        for i in col_plano:
+            pdf.cell(190/len(col_plano), 10, i, border=1, align="C")
+        pdf.ln()
+        for _, row in df_plano.iterrows():
+            for i in col_plano:
+                pdf.cell(190/len(col_plano), 10, str(row[i]), border=1, align="C")
+            pdf.ln()
+
+        # Instruções
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Instruções Pós-Diagnóstico", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        if st.session_state.get('instrucoes_digitadas'):
+            for linha in st.session_state['instrucoes_digitadas'].split('
+'):
+                pdf.multi_cell(0, 10, linha)
+        else:
+            pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
+
+        if os.path.exists("instrucao_img_temp.png"):
+            pdf.image("instrucao_img_temp.png", x=30, w=150)
+
+        # Gráficos Especiais
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Gráficos Especiais - Top 10 Problemas GUT", ln=True, align="C")
+        fig_top10.write_image("fig_top10.png")
+        pdf.image("fig_top10.png", x=10, w=190)
+
+        pdf.add_page()
+        pdf.cell(0, 10, "Avaliação Média por Área e Departamento", ln=True, align="C")
+        fig_bar.write_image("fig_bar.png")
+        pdf.image("fig_bar.png", x=10, w=190)
+
+        pdf.add_page()
+        pdf.cell(0, 10, "Distribuição de Avaliações por Faixa", ln=True, align="C")
+        fig_faixa.write_image("fig_faixa.png")
+        pdf.image("fig_faixa.png", x=10, w=190)
+
+        if 'Responsável' in df_plano.columns:
+            pdf.add_page()
+            pdf.cell(0, 10, "Ações por Responsável", ln=True, align="C")
+            fig_resp.write_image("fig_resp.png")
+            pdf.image("fig_resp.png", x=10, w=190)
+
+        pdf.add_page()
+        pdf.cell(0, 10, "Dispersão de Avaliações por Área", ln=True, align="C")
+        fig_dispersao.write_image("fig_dispersao.png")
+        pdf.image("fig_dispersao.png", x=10, w=190)
+
+        pdf.output("Diagnostico_360_Completo.pdf")
+        st.success("PDF completo gerado com sucesso!")
+        with open("Diagnostico_360_Completo.pdf", "rb") as f:
+            st.download_button('📥 Baixar PDF Completo', f, file_name="Diagnostico_360_Completo.pdf", mime="application/pdf")
+
+
     st.subheader("🧾 Instruções Pós-Diagnóstico")
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
     imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
