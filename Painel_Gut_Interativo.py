@@ -146,13 +146,16 @@ with aba3:
         prazos = df_plano['Prazo'].unique()
         filtro_prazo = st.multiselect("Filtrar por Prazo", options=prazos, default=prazos)
     with col2:
-        responsaveis = df_plano['Responsável'].dropna().unique()
-        filtro_resp = st.multiselect("Filtrar por Responsável", options=responsaveis, default=responsaveis)
-
-    df_filtrado = df_plano[
-        (df_plano['Prazo'].isin(filtro_prazo)) &
-        (df_plano['Responsável'].isin(filtro_resp))
-    ]
+        if 'Responsável' in df_plano.columns:
+            responsaveis = df_plano['Responsável'].dropna().unique()
+            filtro_resp = st.multiselect("Filtrar por Responsável", options=responsaveis, default=responsaveis)
+            df_filtrado = df_plano[
+                (df_plano['Prazo'].isin(filtro_prazo)) &
+                (df_plano['Responsável'].isin(filtro_resp))
+            ]
+        else:
+            st.warning("A coluna 'Responsável' não foi encontrada no Plano de Ação.")
+            df_filtrado = df_plano[df_plano['Prazo'].isin(filtro_prazo)]
 
     st.dataframe(df_filtrado, use_container_width=True)
 
