@@ -25,6 +25,19 @@ if st.sidebar.button("Remover Logomarca do Cliente"):
         os.remove("cliente_logo_temp.png")
         st.sidebar.success("Logomarca removida com sucesso.")
 
+# CABEÇALHO
+col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
+with col_logo:
+    if os.path.exists("logo PR (3) (2).png"):
+        st.image('logo PR (3) (2).png', width=250)
+with col_titulo:
+    st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
+    if nome_cliente:
+        st.markdown(f"<h3 style='text-align: center; color: #555555;'>{nome_cliente}</h3>", unsafe_allow_html=True)
+with col_logo_cliente:
+    if os.path.exists("cliente_logo_temp.png"):
+        st.image('cliente_logo_temp.png', width=150)
+
 # CARREGAMENTO DE DADOS
 @st.cache_data
 def carregar_unificado():
@@ -50,85 +63,99 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "✨ Gráficos Especiais"
 ])
 
-# ABA 4 - Exportar PDF
-with aba4:
-    st.subheader("Exportar Diagnóstico 360º em PDF")
-    opcoes = [
-        "PDF Completo",
-        "Radar de Avaliação",
-        "Matriz GUT",
-        "Plano de Ação",
-        "Top 10 GUT",
-        "Evolução por Área",
-        "Instruções Finais"
+# ABA 1 - Gráfico Radar
+with aba1:
+    st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
+    col1, col2, col3 = st.columns([3, 3, 4])
+    with col1:
+        departamentos = sorted(df_radar['Departamento'].unique())
+        depto_selecionado = st.multiselect("Departamento(s)", departamentos, default=departamentos)
+    with col2:
+        areas = sorted(df_radar['Área'].unique())
+        area_selecionada = st.multiselect("Área(s)", areas, default=areas)
+    with col3:
+        avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, (0.0, 10.0), step=0.1)
+
+    df_plot = df_radar[
+        (df_radar['Departamento'].isin(depto_selecionado)) &
+        (df_radar['Área'].isin(area_selecionada)) &
+        (df_radar['Avaliação'] >= avaliacao_min) &
+        (df_radar['Avaliação'] <= avaliacao_max)
     ]
-    escolha = st.selectbox("Escolha o conteúdo para exportar:", opcoes)
 
-    if st.button("Exportar PDF"):
-        pdf = FPDF()
-        pdf.set_auto_page_break(auto=True, margin=15)
-        pdf.add_page()
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(0, 10, f"{escolha} - Diagnóstico 360º", ln=True, align="C")
+    fig_radar = go.Figure()
+    if not df_plot.empty:
+        df_agrupado = df_plot.groupby('Área')['Avaliação'].mean().reset_index()
+        df_full = pd.DataFrame({'Área': df_radar['Área'].unique()})
+        df_full = df_full.merge(df_agrupado, on='Área', how='left').fillna(0)
+        fig_radar.add_trace(go.Scatterpolar(
+            r=df_full['Avaliação'],
+            theta=df_full['Área'],
+            mode='lines+markers+text',
+            fill='toself',
+            marker=dict(size=8, color='green'),
+            line=dict(color='green', width=3),
+            text=df_agrupado['Avaliação'].round(1).astype(str),
+            textposition="top center",
+            textfont=dict(size=16, color='black')
+        ))
 
-        if escolha == "Radar de Avaliação" or escolha == "PDF Completo":
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Radar de Avaliação", ln=True)
-            pdf.set_font("Arial", '', 10)
-            for index, row in df_radar.iterrows():
-                pdf.multi_cell(0, 10, f"Departamento: {row['Departamento']}, Área: {row['Área']}, Avaliação: {row['Avaliação']}")
+    fig_radar.update_layout(
+        polar=dict(
+            bgcolor="lavender",
+            radialaxis=dict(visible=True, range=[0, 10]),
+            angularaxis=dict(tickfont=dict(size=14))
+        ),
+        title=dict(text="Radar de Avaliação", font=dict(size=20)),
+        margin=dict(l=20, r=20, t=40, b=20),
+        height=600
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.subheader("Tabela de Pontuações Filtradas")
+    st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
-        if escolha == "Matriz GUT" or escolha == "PDF Completo":
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Matriz GUT", ln=True)
-            pdf.set_font("Arial", '', 10)
-            for index, row in df_gut.iterrows():
-                pdf.multi_cell(0, 10, f"Problema: {row['Problema']}, Gravidade: {row['Gravidade']}, Urgência: {row['Urgência']}, Tendência: {row['Tendência']}, Score: {row['Score']}")
+# ABA 2 - Matriz GUT
+with aba2:
+    st.subheader("Matriz GUT - Priorização das Dores")
+    st.dataframe(df_gut, use_container_width=True)
 
-        if escolha == "Plano de Ação" or escolha == "PDF Completo":
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Plano de Ação", ln=True)
-            pdf.set_font("Arial", '', 10)
-            colunas = df_plano.columns.tolist()
-            largura = 190 / len(colunas)
-            for col in colunas:
-                pdf.cell(largura, 10, col, 1)
-            pdf.ln()
-            for _, row in df_plano.iterrows():
-                for col in colunas:
-                    pdf.cell(largura, 10, str(row[col]), 1)
-                pdf.ln()
+    fig_gut = go.Figure(data=[go.Scatter(
+        x=df_gut['Urgência'],
+        y=df_gut['Gravidade'],
+        mode='markers+text',
+        text=df_gut['Problema'],
+        textposition="top center",
+        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds', showscale=True)
+    )])
 
-        if escolha == "Top 10 GUT" or escolha == "PDF Completo":
-            top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Top 10 Problemas GUT", ln=True)
-            for index, row in top10.iterrows():
-                pdf.multi_cell(0, 10, f"Problema: {row['Problema']} - Score: {row['Score']}")
+    fig_gut.update_layout(
+        title="Visualização Matriz GUT",
+        xaxis_title="Urgência",
+        yaxis_title="Gravidade",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
+    )
+    st.plotly_chart(fig_gut, use_container_width=True)
 
-        if escolha == "Evolução por Área" or escolha == "PDF Completo":
-            media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Evolução Média das Avaliações por Área", ln=True)
-            for index, row in media_por_area.iterrows():
-                pdf.multi_cell(0, 10, f"Departamento: {row['Departamento']} - Área: {row['Área']} - Avaliação: {row['Avaliação']:.2f}")
+# ABA 3 - Plano de Ação
+with aba3:
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    st.dataframe(df_plano, use_container_width=True)
 
-        if escolha == "Instruções Finais" or escolha == "PDF Completo":
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 14)
-            pdf.cell(0, 10, "Instruções Finais", ln=True)
-            pdf.set_font("Arial", '', 10)
-            if instrucoes_finais:
-                for linha in instrucoes_finais.split('\n'):
-                    pdf.multi_cell(0, 10, linha)
-            else:
-                pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
+    if 'Prazo' in df_plano.columns:
+        prazo_counts = df_plano['Prazo'].value_counts().reset_index()
+        prazo_counts.columns = ['Prazo', 'Quantidade']
 
-        pdf.output("Diagnostico_Exportado.pdf")
-        with open("Diagnostico_Exportado.pdf", "rb") as f:
-            st.download_button("📥 Baixar PDF Exportado", f, file_name="Diagnostico_Exportado.pdf", mime="application/pdf")
+        st.markdown("### 🥧 Distribuição das Ações por Prazo")
+        fig_pizza = go.Figure(data=[go.Pie(labels=prazo_counts['Prazo'], values=prazo_counts['Quantidade'], hole=0.4)])
+        st.plotly_chart(fig_pizza, use_container_width=True)
+
+        st.markdown("### 📊 Quantidade de Ações por Prazo para Conclusão")
+        fig_barras = go.Figure()
+        fig_barras.add_trace(go.Bar(
+            x=df_plano['Prazo'],
+            y=[1]*len(df_plano),
+            text=df_plano['Ação'],
+            textposition='outside'
+        ))
+        st.plotly_chart(fig_barras, use_container_width=True)
