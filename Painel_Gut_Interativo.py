@@ -40,7 +40,15 @@ df_gut, df_radar, df_plano = carregar_unificado()
 
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
-# ... (outras abas)
+# CRIAÇÃO DAS ABAS
+aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
+    "📊 Gráfico Radar",
+    "🗂️ Matriz GUT",
+    "📝 Plano de Ação",
+    "📥 Exportar PDF",
+    "🧾 Instruções Finais",
+    "✨ Gráficos Especiais"
+])
 
 # ABA 4 - Exportar PDF
 with aba4:
