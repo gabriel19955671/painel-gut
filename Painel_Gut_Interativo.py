@@ -57,8 +57,9 @@ with col_logo:
 
 with col_titulo:
     st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
-    if nome_cliente:
-        st.markdown(f"<h3 style='text-align: center; color: #555555;'>Cliente: {nome_cliente}</h3>", unsafe_allow_html=True)
+    nome_cliente_exibir = st.session_state.get('nome_cliente')
+    if nome_cliente_exibir:
+        st.markdown(f"<h3 style='text-align: center; color: #555555;'>Cliente: {nome_cliente_exibir}</h3>", unsafe_allow_html=True)
 
 with col_logo_cliente:
     if os.path.exists("cliente_logo_temp.png"):
