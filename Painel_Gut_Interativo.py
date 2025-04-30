@@ -6,27 +6,7 @@ from io import BytesIO
 from fpdf import FPDF
 import os
 
-# LOGIN
 
-def login():
-    st.markdown("<h2 style='text-align: center;'>🔒 Acesso ao Diagnóstico 360º</h2>", unsafe_allow_html=True)
-    user = st.text_input("Usuário")
-    password = st.text_input("Senha", type="password")
-    if st.button("Entrar"):
-        if user.lower() == "diagnostico" and password == "Eleve@123":
-            st.session_state["autenticado"] = True
-            st.rerun()
-        else:
-            st.error("Usuário ou senha incorretos.")
-
-if "autenticado" not in st.session_state:
-    st.session_state["autenticado"] = False
-
-if not st.session_state["autenticado"]:
-    login()
-    st.stop()
-
-# CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
 # SIDEBAR
