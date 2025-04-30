@@ -54,21 +54,36 @@ def carregar_unificado():
 # CHAMADA DO CARREGAMENTO
 df_gut, df_radar, df_plano = carregar_unificado()
 
-# GERA A MATRIZ GUT COM ÁREA EM VEZ DE MAPA DE CALOR
+# INSTRUÇÕES
+with st.expander("📌 Instruções de Uso do Diagnóstico"):
+    st.markdown("""
+    Este painel tem como objetivo apresentar graficamente os resultados do diagnóstico 360º. 
+
+    - Envie o arquivo `dados_unificado.xlsx` com as abas `Radar`, `Matriz GUT` e `Plano de Ação`.
+    - Visualize os gráficos interativos abaixo.
+    - Clique no botão **📄 Gerar PDF Diagnóstico** para exportar os resultados em PDF.
+    - O botão **📥 Baixar PDF** aparecerá após a geração ser concluída.
+    """)
+
+# GERA A MATRIZ GUT COM MAPA DE CALOR
 fig_gut = go.Figure()
 if not df_gut.empty:
-    df_gut_grouped = df_gut.groupby(['Urgência', 'Gravidade']).agg({'Score': 'sum'}).reset_index()
-    df_gut_grouped = df_gut_grouped.sort_values(by=['Urgência', 'Gravidade'])
     fig_gut.add_trace(go.Scatter(
-        x=df_gut_grouped['Urgência'],
-        y=df_gut_grouped['Gravidade'],
-        fill='tozeroy',
-        mode='lines+markers',
-        name='Área de Score',
-        line=dict(color='firebrick', width=2)
+        x=df_gut['Urgência'],
+        y=df_gut['Gravidade'],
+        mode='markers+text',
+        text=df_gut['Problema'],
+        textposition="top center",
+        marker=dict(
+            size=df_gut['Tendência'] * 5,
+            color=df_gut['Score'],
+            colorscale='Reds',
+            showscale=True,
+            colorbar=dict(title='Score')
+        )
     ))
 fig_gut.update_layout(
-    title="Visualização Matriz GUT (Área)",
+    title="Visualização Matriz GUT",
     xaxis_title="Urgência",
     yaxis_title="Gravidade",
     margin=dict(l=40, r=40, t=60, b=40),
@@ -118,7 +133,7 @@ if st.button("📄 Gerar PDF Diagnóstico"):
 
     pdf.add_page()
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Matriz GUT - Área de Prioridade", ln=True, align="C")
+    pdf.cell(0, 10, "Matriz GUT - Priorização das Dores", ln=True, align="C")
     if os.path.exists("gut_temp.png"):
         pdf.image("gut_temp.png", x=10, w=190)
 
