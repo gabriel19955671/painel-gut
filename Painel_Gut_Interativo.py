@@ -90,3 +90,79 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "🧾 Instruções Finais",
     "✨ Gráficos Especiais"
 ])
+
+with aba1:
+    st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
+
+with aba2:
+    st.subheader("Matriz GUT - Priorização das Dores")
+    st.dataframe(df_gut, use_container_width=True)
+    fig_gut = go.Figure(data=[go.Scatter(
+        x=df_gut['Urgência'],
+        y=df_gut['Gravidade'],
+        mode='markers+text',
+        text=df_gut['Problema'],
+        textposition="top center",
+        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds', showscale=True)
+    )])
+    fig_gut.update_layout(
+        title="Visualização Matriz GUT",
+        xaxis_title="Urgência",
+        yaxis_title="Gravidade",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
+    )
+    st.plotly_chart(fig_gut, use_container_width=True)
+
+with aba3:
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    st.dataframe(df_plano, use_container_width=True)
+    if 'Prazo' in df_plano.columns:
+        prazo_counts = df_plano['Prazo'].value_counts().reset_index()
+        prazo_counts.columns = ['Prazo', 'Quantidade']
+        st.markdown("### 🥧 Distribuição das Ações por Prazo")
+        fig_pizza = go.Figure(data=[go.Pie(labels=prazo_counts['Prazo'], values=prazo_counts['Quantidade'], hole=0.4)])
+        st.plotly_chart(fig_pizza, use_container_width=True)
+        st.markdown("### 📊 Quantidade de Ações por Prazo para Conclusão")
+        fig_barras = go.Figure()
+        fig_barras.add_trace(go.Bar(
+            x=df_plano['Prazo'],
+            y=[1]*len(df_plano),
+            text=df_plano['Ação'],
+            textposition='outside'
+        ))
+        st.plotly_chart(fig_barras, use_container_width=True)
+
+with aba5:
+    st.subheader("🧾 Instruções Pós-Diagnóstico")
+    instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
+    imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
+    if imagem_instrucao:
+        with open("instrucao_img_temp.png", "wb") as f:
+            f.write(imagem_instrucao.read())
+        st.image("instrucao_img_temp.png", width=400)
+    st.session_state['instrucoes_digitadas'] = instrucoes
+
+with aba6:
+    st.subheader("✨ Gráficos Especiais")
+    st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
+    top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+    fig_top10 = go.Figure(go.Bar(
+        x=top10['Score'],
+        y=top10['Problema'],
+        orientation='h',
+        marker_color='crimson'
+    ))
+    fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
+    st.plotly_chart(fig_top10, use_container_width=True)
+
+    st.markdown("#### 📈 Evolução Média das Avaliações por Área")
+    media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
+    fig_linha = go.Figure()
+    for dep in media_por_area['Departamento'].unique():
+        df_dep = media_por_area[media_por_area['Departamento'] == dep]
+        fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
+    fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
+    st.plotly_chart(fig_linha, use_container_width=True)
