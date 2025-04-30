@@ -48,7 +48,9 @@ if colaboradores:
         df_plano = df_plano[df_plano['Responsável'].isin(colaboradores)]
 
 # CABEÇALHO
-st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='margin-top: 50px;'></div>
+""", unsafe_allow_html=True)
 col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
 with col_logo:
     if os.path.exists("logo PR (3) (2).png"):
