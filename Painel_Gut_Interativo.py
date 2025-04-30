@@ -47,6 +47,19 @@ if colaboradores:
     if 'Responsável' in df_plano.columns:
         df_plano = df_plano[df_plano['Responsável'].isin(colaboradores)]
 
+# CABEÇALHO
+col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
+with col_logo:
+    if os.path.exists("logo PR (3) (2).png"):
+        st.image('logo PR (3) (2).png', width=250)
+with col_titulo:
+    st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
+    if nome_cliente:
+        st.markdown(f"<h3 style='text-align: center; color: #555555;'>Cliente: {nome_cliente}</h3>", unsafe_allow_html=True)
+with col_logo_cliente:
+    if os.path.exists("cliente_logo_temp.png"):
+        st.image('cliente_logo_temp.png', width=150)
+
 # CRIAÇÃO DAS ABAS
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "📊 Gráfico Radar", 
