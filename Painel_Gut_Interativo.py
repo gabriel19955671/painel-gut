@@ -245,7 +245,7 @@ with aba4:
         pdf.set_font("Arial", '', 12)
         if st.session_state.get('instrucoes_digitadas'):
             for linha in st.session_state['instrucoes_digitadas'].split('
-'):
+''):
                 pdf.multi_cell(0, 10, linha)
         else:
             pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
