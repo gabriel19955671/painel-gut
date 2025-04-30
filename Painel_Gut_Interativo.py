@@ -49,7 +49,8 @@ if colaboradores:
 
 # CABEÇALHO
 st.markdown("""
-    <div style='margin-top: 50px;'></div>
+    <div style='margin-top: 120px;'></div>
+    <hr style='margin-bottom: 10px;'>
 """, unsafe_allow_html=True)
 col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
 with col_logo:
