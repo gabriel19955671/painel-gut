@@ -2,4 +2,4 @@ streamlit==1.33.0
 pandas
 plotly
 fpdf
-openpyx1
+openpyxl
