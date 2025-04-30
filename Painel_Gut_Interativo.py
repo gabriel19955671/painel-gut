@@ -51,6 +51,34 @@ def carregar_unificado():
 
 df_gut, df_radar, df_plano = carregar_unificado()
 
+# GERAÇÃO ANTECIPADA DO GRÁFICO RADAR PARA USO NO PDF
+fig_radar = go.Figure()
+df_plot = df_radar.copy()
+df_agrupado = df_plot.groupby('Área')['Avaliação'].mean().reset_index()
+df_full = pd.DataFrame({'Área': df_radar['Área'].unique()})
+df_full = df_full.merge(df_agrupado, on='Área', how='left').fillna(0)
+fig_radar.add_trace(go.Scatterpolar(
+    r=df_full['Avaliação'],
+    theta=df_full['Área'],
+    mode='lines+markers+text',
+    fill='toself',
+    marker=dict(size=8, color='green'),
+    line=dict(color='green', width=3),
+    text=df_agrupado['Avaliação'].round(1).astype(str),
+    textposition="top center",
+    textfont=dict(size=16, color='black')
+))
+fig_radar.update_layout(
+    polar=dict(
+        bgcolor="lavender",
+        radialaxis=dict(visible=True, range=[0,10]),
+        angularaxis=dict(tickfont=dict(size=14))
+    ),
+    title=dict(text="Radar de Avaliação", font=dict(size=20)),
+    margin=dict(l=20, r=20, t=40, b=20),
+    height=600
+)
+
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
 # CRIAÇÃO DAS ABAS
@@ -62,107 +90,3 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "🧾 Instruções Finais",
     "✨ Gráficos Especiais"
 ])
-
-# [ABAS 1 a 3 já existentes permanecem inalteradas]
-
-# ABA 4 - Exportar PDF
-with aba4:
-    st.subheader("Exportar Diagnóstico 360º em PDF")
-    opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
-        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais"])
-    buf_radar = BytesIO()
-    fig_radar.write_image(buf_radar, format='png')
-
-    if st.button("Gerar PDF"):
-        pdf = FPDF()
-        pdf.set_auto_page_break(auto=True, margin=15)
-
-        if opcoes_exportacao in ["PDF Completo", "Gráfico Radar"]:
-            with open("radar_temp.png", "wb") as f:
-                f.write(buf_radar.getbuffer())
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(0, 10, "Gráfico Radar de Avaliações", ln=True, align="C")
-            pdf.image("radar_temp.png", x=10, y=None, w=180)
-
-        if opcoes_exportacao in ["PDF Completo", "Matriz GUT"]:
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(0, 10, "Matriz GUT - Priorização das Dores", ln=True, align="C")
-            pdf.set_font("Arial", '', 10)
-            colunas_gut = df_gut.columns.tolist()
-            largura_coluna = 190 / len(colunas_gut)
-            for coluna in colunas_gut:
-                pdf.cell(largura_coluna, 10, coluna, border=1, align="C")
-            pdf.ln()
-            for _, row in df_gut.iterrows():
-                for coluna in colunas_gut:
-                    texto = str(row[coluna])
-                    pdf.cell(largura_coluna, 10, texto, border=1, align="C")
-                pdf.ln()
-
-        if opcoes_exportacao in ["PDF Completo", "Plano de Ação"]:
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(0, 10, "Plano de Ação - Estratégias de Melhoria", ln=True, align="C")
-            pdf.set_font("Arial", '', 10)
-            colunas_plano = df_plano.columns.tolist()
-            largura_coluna = 190 / len(colunas_plano)
-            for coluna in colunas_plano:
-                pdf.cell(largura_coluna, 10, coluna, border=1, align="C")
-            pdf.ln()
-            for _, row in df_plano.iterrows():
-                for coluna in colunas_plano:
-                    texto = str(row[coluna])
-                    pdf.cell(largura_coluna, 10, texto, border=1, align="C")
-                pdf.ln()
-
-        if opcoes_exportacao in ["PDF Completo", "Instruções Finais"]:
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(0, 10, "Instruções Pós-Diagnóstico", ln=True, align="C")
-            pdf.set_font("Arial", '', 12)
-            if instrucoes_finais:
-                for linha in instrucoes_finais.split("\n"):
-                    pdf.multi_cell(0, 10, linha)
-            else:
-                pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
-
-        pdf.output("Diagnostico_360_Selecionado.pdf")
-        st.success(f"PDF de {opcoes_exportacao} gerado com sucesso!")
-        with open("Diagnostico_360_Selecionado.pdf", "rb") as f:
-            st.download_button('📥 Baixar PDF', f, file_name="Diagnostico_360_Selecionado.pdf", mime="application/pdf")
-
-# ABA 5 - Instruções Finais
-with aba5:
-    st.subheader("🧾 Instruções Pós-Diagnóstico")
-    instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
-    imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
-    if imagem_instrucao:
-        with open("instrucao_img_temp.png", "wb") as f:
-            f.write(imagem_instrucao.read())
-        st.image("instrucao_img_temp.png", width=400)
-    st.session_state['instrucoes_digitadas'] = instrucoes
-
-# ABA 6 - Gráficos Especiais
-with aba6:
-    st.subheader("✨ Gráficos Especiais")
-    st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
-    top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
-    fig_top10 = go.Figure(go.Bar(
-        x=top10['Score'],
-        y=top10['Problema'],
-        orientation='h',
-        marker_color='crimson'
-    ))
-    fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
-    st.plotly_chart(fig_top10, use_container_width=True)
-
-    st.markdown("#### 📈 Evolução Média das Avaliações por Área")
-    media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
-    fig_linha = go.Figure()
-    for dep in media_por_area['Departamento'].unique():
-        df_dep = media_por_area[media_por_area['Departamento'] == dep]
-        fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
-    fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
-    st.plotly_chart(fig_linha, use_container_width=True)
