@@ -41,136 +41,98 @@ def carregar_unificado():
 
 df_gut, df_radar, df_plano = carregar_unificado()
 
-# CAMPO DE INSTRUÇÕES
-with st.expander("🧾 Instruções Pós-Diagnóstico", expanded=True):
-    instrucoes = st.text_area("Digite as instruções finais para o cliente (expansível):", height=300)
-    imagem_instrucao = st.file_uploader("📷 Anexar imagem complementar (opcional):", type=["png", "jpg", "jpeg"])
-    if imagem_instrucao:
-        with open("instrucao_img_temp.png", "wb") as f:
-            f.write(imagem_instrucao.read())
-        st.image("instrucao_img_temp.png", width=400)
-    st.session_state['instrucoes_digitadas'] = instrucoes
+# ABA RADAR
+with st.expander("📊 Gráfico Radar por Departamento e Área", expanded=False):
+    st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
+    col1, col2, col3 = st.columns([3, 3, 4])
+    with col1:
+        departamentos = sorted(df_radar['Departamento'].unique())
+        depto_selecionado = st.multiselect("Departamento(s)", departamentos, default=departamentos)
+    with col2:
+        areas = sorted(df_radar['Área'].unique())
+        area_selecionada = st.multiselect("Área(s)", areas, default=areas)
+    with col3:
+        avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, (0.0, 10.0), step=0.1)
 
-# GRÁFICO ADICIONAL - Top 10 Dores por Score GUT
-with st.expander("📊 Top 10 Dores com Maior Score GUT"):
-    top_dores = df_gut.sort_values(by='Score', ascending=False).head(10)
-    fig_top_dores = go.Figure(data=go.Bar(
-        x=top_dores['Score'],
-        y=top_dores['Problema'],
-        orientation='h',
-        marker_color='crimson'
-    ))
-    fig_top_dores.update_layout(
-        title="Top 10 Dores Priorizadas (Score GUT)",
-        xaxis_title="Score",
-        yaxis_title="Problema",
-        height=500,
-        margin=dict(l=150, r=40, t=40, b=40)
-    )
-    st.plotly_chart(fig_top_dores, use_container_width=True)
-    fig_top_dores.write_image("top_dores.png", format="png")
+    df_plot = df_radar[
+        (df_radar['Departamento'].isin(depto_selecionado)) &
+        (df_radar['Área'].isin(area_selecionada)) &
+        (df_radar['Avaliação'] >= avaliacao_min) &
+        (df_radar['Avaliação'] <= avaliacao_max)
+    ]
 
-# BOTÕES DE EXPORTAÇÃO POR PARTE
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button("📄 PDF: Apenas Radar"):
-        fig_radar = go.Figure()
-        df_agrupado = df_radar.groupby('Área')['Avaliação'].mean().reset_index()
+    fig_radar = go.Figure()
+    if not df_plot.empty:
+        df_agrupado = df_plot.groupby('Área')['Avaliação'].mean().reset_index()
         df_full = pd.DataFrame({'Área': df_radar['Área'].unique()})
         df_full = df_full.merge(df_agrupado, on='Área', how='left').fillna(0)
         fig_radar.add_trace(go.Scatterpolar(
             r=df_full['Avaliação'],
             theta=df_full['Área'],
             mode='lines+markers+text',
-            fill='toself'
+            fill='toself',
+            marker=dict(size=8, color='green'),
+            line=dict(color='green', width=3),
+            text=df_agrupado['Avaliação'].round(1).astype(str),
+            textposition="top center",
+            textfont=dict(size=16, color='black')
         ))
-        fig_radar.write_image("radar_temp.png")
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.image("radar_temp.png", x=10, w=190)
-        pdf.output("Radar_Separado.pdf")
-        with open("Radar_Separado.pdf", "rb") as f:
-            st.download_button("📥 Baixar Radar", f, file_name="Radar_Separado.pdf")
 
-with col2:
-    if st.button("📄 PDF: Apenas GUT"):
-        fig_gut = go.Figure(data=[go.Scatter(
-            x=df_gut['Urgência'],
-            y=df_gut['Gravidade'],
-            mode='markers+text',
-            text=df_gut['Problema'],
-            marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds')
-        )])
-        fig_gut.write_image("gut_temp.png")
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.image("gut_temp.png", x=10, w=190)
-        pdf.output("GUT_Separado.pdf")
-        with open("GUT_Separado.pdf", "rb") as f:
-            st.download_button("📥 Baixar GUT", f, file_name="GUT_Separado.pdf")
+    fig_radar.update_layout(
+        polar=dict(
+            bgcolor="lavender",
+            radialaxis=dict(visible=True, range=[0,10]),
+            angularaxis=dict(tickfont=dict(size=14))
+        ),
+        title=dict(text="Radar de Avaliação", font=dict(size=20)),
+        margin=dict(l=20, r=20, t=40, b=20),
+        height=600
+    )
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.subheader("Tabela de Pontuações Filtradas")
+    st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
-with col3:
-    if st.button("📄 PDF: Apenas Instruções"):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", '', 12)
-        pdf.multi_cell(0, 10, instrucoes or "Nenhuma instrução preenchida.")
-        if os.path.exists("instrucao_img_temp.png"):
-            pdf.image("instrucao_img_temp.png", x=30, w=150)
-        pdf.output("Instrucoes_Separado.pdf")
-        with open("Instrucoes_Separado.pdf", "rb") as f:
-            st.download_button("📥 Baixar Instruções", f, file_name="Instrucoes_Separado.pdf")
-
-# BOTÃO PDF COMPLETO
-if st.button("📄 Gerar PDF Completo com Tudo"):
-    fig_radar = go.Figure()
-    df_agrupado = df_radar.groupby('Área')['Avaliação'].mean().reset_index()
-    df_full = pd.DataFrame({'Área': df_radar['Área'].unique()})
-    df_full = df_full.merge(df_agrupado, on='Área', how='left').fillna(0)
-    fig_radar.add_trace(go.Scatterpolar(
-        r=df_full['Avaliação'],
-        theta=df_full['Área'],
-        mode='lines+markers+text',
-        fill='toself'
-    ))
-    fig_radar.write_image("radar_temp.png")
+# ABA GUT COMPLETA
+with st.expander("🗂️ Matriz GUT", expanded=False):
+    st.subheader("Matriz GUT - Priorização das Dores")
+    st.dataframe(df_gut, use_container_width=True)
 
     fig_gut = go.Figure(data=[go.Scatter(
         x=df_gut['Urgência'],
         y=df_gut['Gravidade'],
         mode='markers+text',
         text=df_gut['Problema'],
-        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds')
+        textposition="top center",
+        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds', showscale=True)
     )])
-    fig_gut.write_image("gut_temp.png")
+    fig_gut.update_layout(
+        title="Visualização Matriz GUT",
+        xaxis_title="Urgência",
+        yaxis_title="Gravidade",
+        margin=dict(l=40, r=40, t=60, b=40),
+        height=500
+    )
+    st.plotly_chart(fig_gut, use_container_width=True)
 
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
+# ABA PLANO DE AÇÃO
+with st.expander("📝 Plano de Ação", expanded=False):
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    st.dataframe(df_plano, use_container_width=True)
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Gráfico Radar de Avaliações", ln=True, align="C")
-    pdf.image("radar_temp.png", x=10, w=190)
+    if 'Prazo' in df_plano.columns:
+        prazo_counts = df_plano['Prazo'].value_counts().reset_index()
+        prazo_counts.columns = ['Prazo', 'Quantidade']
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Matriz GUT - Priorização das Dores", ln=True, align="C")
-    pdf.image("gut_temp.png", x=10, w=190)
+        st.markdown("### 🥧 Distribuição das Ações por Prazo")
+        fig_pizza = go.Figure(data=[go.Pie(labels=prazo_counts['Prazo'], values=prazo_counts['Quantidade'], hole=0.4)])
+        st.plotly_chart(fig_pizza, use_container_width=True)
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Top 10 Dores por Score GUT", ln=True, align="C")
-    pdf.image("top_dores.png", x=10, w=190)
-
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Instruções Pós-Diagnóstico", ln=True, align="C")
-    pdf.set_font("Arial", '', 12)
-    for linha in instrucoes.split('\n'):
-        pdf.multi_cell(0, 10, linha)
-    if os.path.exists("instrucao_img_temp.png"):
-        pdf.image("instrucao_img_temp.png", x=30, w=150)
-
-    pdf.output("Diagnostico_Completo.pdf")
-    with open("Diagnostico_Completo.pdf", "rb") as f:
-        st.download_button('📥 Baixar PDF Completo', f, file_name="Diagnostico_Completo.pdf", mime="application/pdf")
+        st.markdown("### 📊 Quantidade de Ações por Prazo para Conclusão")
+        fig_barras = go.Figure()
+        fig_barras.add_trace(go.Bar(
+            x=df_plano['Prazo'],
+            y=[1]*len(df_plano),
+            text=df_plano['Ação'],
+            textposition='outside'
+        ))
+        st.plotly_chart(fig_barras, use_container_width=True)
