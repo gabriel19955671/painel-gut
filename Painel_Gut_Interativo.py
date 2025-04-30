@@ -135,6 +135,89 @@ with aba3:
         ))
         st.plotly_chart(fig_barras, use_container_width=True)
 
+with aba4:
+    st.subheader("Exportar Diagnóstico 360º")
+    st.markdown("Selecione o conteúdo que deseja exportar:")
+    opcoes_exportacao = st.selectbox("Escolha", ["PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais"])
+
+    if st.button("📥 Gerar PDF"):
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+
+        # Cabeçalho
+        if os.path.exists("logo PR (3) (2).png"):
+            pdf.image("logo PR (3) (2).png", x=10, y=8, w=50)
+        if os.path.exists("cliente_logo_temp.png"):
+            pdf.image("cliente_logo_temp.png", x=150, y=8, w=50)
+        pdf.set_font("Arial", 'B', 20)
+        pdf.ln(60)
+        pdf.cell(0, 15, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+        if nome_cliente:
+            pdf.set_font("Arial", '', 14)
+            pdf.ln(10)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True, align="C")
+
+        if opcoes_exportacao in ["PDF Completo", "Gráfico Radar"]:
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, "Gráfico Radar de Avaliações", ln=True, align="C")
+            buf_radar = BytesIO()
+            fig_radar.write_image(buf_radar, format='png')
+            with open("radar_temp.png", "wb") as f:
+                f.write(buf_radar.getbuffer())
+            pdf.image("radar_temp.png", x=10, w=180)
+
+        if opcoes_exportacao in ["PDF Completo", "Matriz GUT"]:
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, "Matriz GUT - Priorização das Dores", ln=True, align="C")
+            pdf.set_font("Arial", '', 10)
+            colunas = df_gut.columns.tolist()
+            largura = 190 / len(colunas)
+            for coluna in colunas:
+                pdf.cell(largura, 10, coluna[:15], border=1, align="C")
+            pdf.ln()
+            for _, row in df_gut.iterrows():
+                for coluna in colunas:
+                    pdf.cell(largura, 10, str(row[coluna])[:15], border=1, align="C")
+                pdf.ln()
+
+        if opcoes_exportacao in ["PDF Completo", "Plano de Ação"]:
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, "Plano de Ação - Estratégias de Melhoria", ln=True, align="C")
+            pdf.set_font("Arial", '', 10)
+            colunas = df_plano.columns.tolist()
+            largura = 190 / len(colunas)
+            for coluna in colunas:
+                pdf.cell(largura, 10, coluna[:15], border=1, align="C")
+            pdf.ln()
+            for _, row in df_plano.iterrows():
+                for coluna in colunas:
+                    pdf.cell(largura, 10, str(row[coluna])[:15], border=1, align="C")
+                pdf.ln()
+
+        if opcoes_exportacao in ["PDF Completo", "Instruções Finais"]:
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, "Instruções Pós-Diagnóstico", ln=True, align="C")
+            pdf.set_font("Arial", '', 12)
+            if instrucoes_finais:
+                for linha in instrucoes_finais.split('\n'):
+                    pdf.multi_cell(0, 10, linha)
+            else:
+                pdf.multi_cell(0, 10, "Nenhuma instrução preenchida.")
+            if os.path.exists("instrucao_img_temp.png"):
+                pdf.ln(10)
+                pdf.image("instrucao_img_temp.png", x=30, w=150)
+
+        pdf.output("Diagnostico_360_Exportado.pdf")
+        with open("Diagnostico_360_Exportado.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", f, file_name="Diagnostico_360_Exportado.pdf", mime="application/pdf")
+
 with aba5:
     st.subheader("🧾 Instruções Pós-Diagnóstico")
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
@@ -144,25 +227,3 @@ with aba5:
             f.write(imagem_instrucao.read())
         st.image("instrucao_img_temp.png", width=400)
     st.session_state['instrucoes_digitadas'] = instrucoes
-
-with aba6:
-    st.subheader("✨ Gráficos Especiais")
-    st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
-    top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
-    fig_top10 = go.Figure(go.Bar(
-        x=top10['Score'],
-        y=top10['Problema'],
-        orientation='h',
-        marker_color='crimson'
-    ))
-    fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
-    st.plotly_chart(fig_top10, use_container_width=True)
-
-    st.markdown("#### 📈 Evolução Média das Avaliações por Área")
-    media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
-    fig_linha = go.Figure()
-    for dep in media_por_area['Departamento'].unique():
-        df_dep = media_por_area[media_por_area['Departamento'] == dep]
-        fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
-    fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
-    st.plotly_chart(fig_linha, use_container_width=True)
