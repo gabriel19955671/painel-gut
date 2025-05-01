@@ -21,10 +21,11 @@ if uploaded_logo:
         f.write(uploaded_logo.read())
 
 if st.sidebar.button("Remover Logomarca do Cliente"):
-    if os.path.exists("logo_PR_FIXA.png"):
+if os.path.exists("logo_PR_FIXA.png"):
     with open("logo_PR_FIXA.png", "rb") as img:
         st.image(img, width=150)
 else:
+    st.warning("⚠️ Logomarca não encontrada.")
     st.warning("⚠️ Logomarca não encontrada.")
 else:
     st.warning("⚠️ Logomarca não encontrada.")
@@ -219,6 +220,6 @@ if st.button("Gerar PDF"):
 
     for titulo, imagem in secoes:
         pdf.add_page()
-        if os.path.exists("logo_PR_FIXA.png"):
+if os.path.exists("logo_PR_FIXA.png"):
     with open("logo_PR_FIXA.png", "rb") as img:
         st.image(img, width=150)
