@@ -25,7 +25,7 @@ if os.path.exists("logo_PR_FIXA.png"):
     with open("logo_PR_FIXA.png", "rb") as img:
         st.image(img, width=150)
 else:
-    st.warning("⚠️ Logomarca não encontrada.")
+    st.warning(⚠️ Logomarca não encontrada.")
     st.warning("⚠️ Logomarca não encontrada.")
 else:
     st.warning("⚠️ Logomarca não encontrada.")
