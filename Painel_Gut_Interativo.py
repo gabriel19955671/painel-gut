@@ -1,4 +1,3 @@
-# IMPORTAÇÕES
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -14,7 +13,7 @@ col_logo_esquerdo, col_restante = st.columns([1, 6])
 with col_logo_esquerdo:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=120)
+        st.image(logo_img, width=160)  # AUMENTADO
     else:
         st.warning("Logomarca não encontrada.")
 
@@ -29,7 +28,6 @@ if uploaded_logo:
     with open("logo_cliente_temp.png", "wb") as f:
         f.write(uploaded_logo.read())
 
-# CARREGAMENTO DE DADOS
 @st.cache_data
 def carregar_unificado():
     arquivo = pd.ExcelFile('dados_unificado.xlsx', engine='openpyxl')
@@ -43,17 +41,15 @@ def carregar_unificado():
 df_gut, df_radar, df_plano = carregar_unificado()
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
-# ABAS
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "📊 Gráfico Radar",
-    "🗂️ Matriz GUT",
+    "💂️ Matriz GUT",
     "📝 Plano de Ação",
-    "📥 Exportar PDF",
+    "📅 Exportar PDF",
     "🧾 Instruções Finais",
     "✨ Gráficos Especiais"
 ])
 
-# ABA 1 - Gráfico Radar
 with aba1:
     st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
     col1, col2, col3 = st.columns([3, 3, 4])
@@ -93,7 +89,7 @@ with aba1:
     fig_radar.update_layout(
         polar=dict(
             bgcolor="lavender",
-            radialaxis=dict(visible=True, range=[0,10]),
+            radialaxis=dict(visible=True, range=[0, 10]),
             angularaxis=dict(tickfont=dict(size=14))
         ),
         title=dict(text="Radar de Avaliação", font=dict(size=20)),
@@ -104,7 +100,6 @@ with aba1:
     st.subheader("Tabela de Pontuações Filtradas")
     st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
-# ABA 2 - Matriz GUT
 with aba2:
     st.subheader("Matriz GUT - Priorização das Dores")
     score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
@@ -128,7 +123,6 @@ with aba2:
     )
     st.plotly_chart(fig_gut, use_container_width=True)
 
-# ABA 3 - Plano de Ação
 with aba3:
     st.subheader("Plano de Ação - Estratégias de Melhoria")
     col1, col2 = st.columns(2)
@@ -145,7 +139,6 @@ with aba3:
             ]
     st.dataframe(df_filtrado, use_container_width=True)
 
-# ABA 5 - Instruções Finais
 with aba5:
     st.subheader("🧾 Instruções Pós-Diagnóstico")
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
@@ -155,17 +148,11 @@ with aba5:
             f.write(imagem_instrucao.read())
     st.session_state['instrucoes_digitadas'] = instrucoes
 
-# ABA 6 - Gráficos Especiais
 with aba6:
     st.subheader("✨ Gráficos Especiais")
     st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
     top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
-    fig_top10 = go.Figure(go.Bar(
-        x=top10['Score'],
-        y=top10['Problema'],
-        orientation='h',
-        marker_color='crimson'
-    ))
+    fig_top10 = go.Figure(go.Bar(x=top10['Score'], y=top10['Problema'], orientation='h', marker_color='crimson'))
     fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
     st.plotly_chart(fig_top10, use_container_width=True)
 
@@ -178,21 +165,19 @@ with aba6:
     fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
     st.plotly_chart(fig_linha, use_container_width=True)
 
-# ABA 4 - Exportar PDF
 with aba4:
     st.subheader("Exportar Diagnóstico 360º em PDF")
     opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
-        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"
-    ])
+        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
     if st.button("Gerar PDF"):
         fig_radar.write_image("radar_temp.png")
         fig_gut.write_image("gut_temp.png")
         fig_top10.write_image("top10_temp.png")
         fig_linha.write_image("linha_temp.png")
         pdf = FPDF()
+        secoes = [("Diagnóstico 360º", "Capa")]
         if opcoes_exportacao == "PDF Completo":
-            secoes = [
-                ("Diagnóstico 360º", "Capa"),
+            secoes += [
                 ("Gráfico Radar", "radar_temp.png"),
                 ("Matriz GUT", "gut_temp.png"),
                 ("Plano de Ação", None),
@@ -202,11 +187,12 @@ with aba4:
             ]
         else:
             secoes = [(opcoes_exportacao, None)]
+
         for titulo, imagem in secoes:
             pdf.add_page()
             if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
-                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
+                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
                 pdf.ln(30)
                 pdf.set_font("Arial", "B", 18)
                 pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
@@ -215,9 +201,13 @@ with aba4:
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
                 continue
+
+            if os.path.exists("logo_PR_FIXA.png"):
+                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
             pdf.set_font("Arial", "B", 14)
             pdf.cell(0, 10, titulo, ln=True)
             pdf.set_font("Arial", "", 12)
+
             if imagem and os.path.exists(imagem):
                 pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
@@ -225,6 +215,7 @@ with aba4:
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
             elif titulo == "Instruções Finais":
                 pdf.multi_cell(0, 10, instrucoes_finais)
+
         pdf.output("diagnostico_360_exportado.pdf")
         with open("diagnostico_360_exportado.pdf", "rb") as f:
-            st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
+            st.download_button("📅 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
