@@ -40,6 +40,10 @@ with col_titulo:
         st.markdown(f"<h3 style='text-align: center; color: #555555;'>{nome_cliente}</h3>", unsafe_allow_html=True)
 with col_logo_cliente:
     if os.path.exists("cliente_logo_temp.png"):
+        st.image("cliente_logo_temp.png", width=150)
+    else:
+        st.markdown("*Logo não enviada*")
+    if os.path.exists("cliente_logo_temp.png"):
         st.image('cliente_logo_temp.png', width=150)
 
 # CARREGAMENTO DE DADOS
@@ -241,6 +245,8 @@ with aba4:
                 pdf.set_font("Arial", '', 14)
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+if os.path.exists("cliente_logo_temp.png"):
+    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
                 pdf.ln(10)
 
             pdf = FPDF()
@@ -365,6 +371,8 @@ with aba4:
                 pdf.set_font("Arial", '', 14)
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+if os.path.exists("cliente_logo_temp.png"):
+    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
                 pdf.ln(10)
 
             pdf = FPDF()
