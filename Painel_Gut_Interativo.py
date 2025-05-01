@@ -258,16 +258,5 @@ with aba4:
         with open("diagnostico_360_exportado.pdf", "rb") as f:
             st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
     if opcoes_exportacao == "PDF Completo":
-            secoes = [
-                ("Diagnóstico 360º", "Capa"),
-                ("Gráfico Radar", "radar_temp.png"),
-                ("Matriz GUT", "gut_temp.png"),
-                ("Plano de Ação", None),
-                ("Instruções Finais", None),
-                ("Top 10 Problemas", "top10_temp.png"),
-                ("Evolução por Área", "linha_temp.png")
-            ]
-            secoes = [
-                
         for titulo, imagem in secoes:
             pdf.add_page()
