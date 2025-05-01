@@ -220,23 +220,5 @@ if st.button("Gerar PDF"):
     for titulo, imagem in secoes:
         pdf.add_page()
         if os.path.exists("logo_PR_FIXA.png"):
-            pdf.image("logo_PR_FIXA.png", x=140, y=8, w=60)
-
-        pdf.set_font("Arial", 'B', 14)
-        pdf.cell(0, 10, titulo, ln=True)
-        pdf.set_font("Arial", '', 12)
-
-        if imagem == "Capa":
-            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
-        elif imagem and os.path.exists(imagem):
-            pdf.image(imagem, x=10, y=30, w=190)
-        elif titulo == "Plano de Ação":
-            for _, row in df_plano.iterrows():
-                pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
-        elif titulo == "Instruções Finais":
-            pdf.multi_cell(0, 10, instrucoes_finais)
-
-    pdf.output("diagnostico_360_exportado.pdf")
-    with open("diagnostico_360_exportado.pdf", "rb") as f:
-        st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
+    with open("logo_PR_FIXA.png", "rb") as img:
+        st.image(img, width=150)
