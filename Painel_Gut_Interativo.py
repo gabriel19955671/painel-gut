@@ -21,7 +21,7 @@ if uploaded_logo:
         f.write(uploaded_logo.read())
 
 if st.sidebar.button("Remover Logomarca do Cliente"):
-    if os.path.exists("cliente_logo_temp.png"):
+    if os.path.exists("logo_PR_FIXA.png"):
         os.remove("cliente_logo_temp.png")
         st.sidebar.success("Logomarca removida com sucesso.")
 
@@ -35,7 +35,7 @@ with col_titulo:
     if nome_cliente:
         st.markdown(f"<h3 style='text-align: center; color: #555555;'>{nome_cliente}</h3>", unsafe_allow_html=True)
 with col_logo_cliente:
-    if os.path.exists("cliente_logo_temp.png"):
+    if os.path.exists("logo_PR_FIXA.png"):
         st.image('cliente_logo_temp.png', width=150)
 
 # CARREGAMENTO DE DADOS
