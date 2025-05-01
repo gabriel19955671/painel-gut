@@ -237,100 +237,99 @@ with aba4:
             ]
         else:
             secoes = [
-                for titulo, imagem in secoes:
-                pdf.add_page()
-                if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
-                pdf.set_font("Arial", 'B', 14)
-                pdf.cell(0, 10, titulo, ln=True)
-                pdf.set_font("Arial", '', 12)
-                if imagem == "Capa":
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
-                elif imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=30, w=190)
-                elif titulo == "Plano de Ação":
-                for _, row in df_plano.iterrows():
+        for titulo, imagem in secoes:
+            pdf.add_page()
+            if os.path.exists("logo_PR_FIXA.png"):
+            pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
+            pdf.set_font("Arial", 'B', 14)
+            pdf.cell(0, 10, titulo, ln=True)
+            pdf.set_font("Arial", '', 12)
+            if imagem == "Capa":
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
+            elif imagem and os.path.exists(imagem):
+            pdf.image(imagem, x=10, y=30, w=190)
+            elif titulo == "Plano de Ação":
+            for _, row in df_plano.iterrows():
             ]
             elif titulo == "Instruções Finais":
-                pdf.multi_cell(0, 10, instrucoes_finais)
-        pdf.output("diagnostico_360_exportado.pdf")
-        with open("diagnostico_360_exportado.pdf", "rb") as f:
+            pdf.multi_cell(0, 10, instrucoes_finais)
+            pdf.output("diagnostico_360_exportado.pdf")
+            with open("diagnostico_360_exportado.pdf", "rb") as f:
             st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
-        fig_gut.write_image("gut_temp.png")
-        fig_top10.write_image("top10_temp.png")
-        fig_linha.write_image("linha_temp.png")
-                ("Diagnóstico 360º", "Capa"),
-                ("Gráfico Radar", "radar_temp.png"),
-                ("Matriz GUT", "gut_temp.png"),
-                ("Plano de Ação", None),
-                ("Instruções Finais", None),
-                ("Top 10 Problemas", "top10_temp.png"),
-                ("Evolução por Área", "linha_temp.png")
+            fig_gut.write_image("gut_temp.png")
+            fig_top10.write_image("top10_temp.png")
+            fig_linha.write_image("linha_temp.png")
+            ("Diagnóstico 360º", "Capa"),
+            ("Gráfico Radar", "radar_temp.png"),
+            ("Matriz GUT", "gut_temp.png"),
+            ("Plano de Ação", None),
+            ("Instruções Finais", None),
+            ("Top 10 Problemas", "top10_temp.png"),
+            ("Evolução por Área", "linha_temp.png")
             ]
-        else:
+            else:
         for titulo, imagem in secoes:
             pdf.add_page()
             if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
+            pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
             pdf.set_font("Arial", 'B', 14)
             pdf.cell(0, 10, titulo, ln=True)
             pdf.set_font("Arial", '', 12)
             if imagem == "Capa":
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
             elif imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=30, w=190)
+            pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
-                for _, row in df_plano.iterrows():
-                    pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
+            for _, row in df_plano.iterrows():
+            pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
             elif titulo == "Instruções Finais":
-                pdf.multi_cell(0, 10, instrucoes_finais)
-        pdf.output("diagnostico_360_exportado.pdf")
-        with open("diagnostico_360_exportado.pdf", "rb") as f:
-        fig_gut.write_image("gut_temp.png")
-        fig_top10.write_image("top10_temp.png")
-        fig_linha.write_image("linha_temp.png")
-                ("Diagnóstico 360º", "Capa"),
-                ("Gráfico Radar", "radar_temp.png"),
-                ("Matriz GUT", "gut_temp.png"),
-                ("Plano de Ação", None),
-                ("Instruções Finais", None),
-                ("Top 10 Problemas", "top10_temp.png"),
-                ("Evolução por Área", "linha_temp.png")
+            pdf.multi_cell(0, 10, instrucoes_finais)
+            pdf.output("diagnostico_360_exportado.pdf")
+            with open("diagnostico_360_exportado.pdf", "rb") as f:
+            fig_gut.write_image("gut_temp.png")
+            fig_top10.write_image("top10_temp.png")
+            fig_linha.write_image("linha_temp.png")
+            ("Diagnóstico 360º", "Capa"),
+            ("Gráfico Radar", "radar_temp.png"),
+            ("Matriz GUT", "gut_temp.png"),
+            ("Plano de Ação", None),
+            ("Instruções Finais", None),
+            ("Top 10 Problemas", "top10_temp.png"),
+            ("Evolução por Área", "linha_temp.png")
             ]
         for titulo, imagem in secoes:
             pdf.add_page()
             if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=140, y=8, w=60)
+            pdf.image("logo_PR_FIXA.png", x=140, y=8, w=60)
             pdf.set_font("Arial", 'B', 14)
             pdf.cell(0, 10, titulo, ln=True)
             pdf.set_font("Arial", '', 12)
             if imagem == "Capa":
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
             elif imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=30, w=190)
+            pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
-                for _, row in df_plano.iterrows():
-                    pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
+            for _, row in df_plano.iterrows():
+            pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
             elif titulo == "Instruções Finais":
-                pdf.multi_cell(0, 10, instrucoes_finais)
-        pdf.output("diagnostico_360_exportado.pdf")
-        with open("diagnostico_360_exportado.pdf", "rb") as f:
-    st.subheader("Exportar Diagnóstico 360º em PDF")
-        "PDF Completo",
-        "Gráfico Radar",
-        "Matriz GUT",
-        "Plano de Ação",
-        "Instruções Finais",
-        "Gráficos Especiais"
-    ])
-    fig_radar.write_image("radar_temp.png")
-    fig_gut.write_image("gut_temp.png")
-    fig_top10.write_image("top10_temp.png")
-    fig_linha.write_image("linha_temp.png")
-
+            pdf.multi_cell(0, 10, instrucoes_finais)
+            pdf.output("diagnostico_360_exportado.pdf")
+            with open("diagnostico_360_exportado.pdf", "rb") as f:
+            st.subheader("Exportar Diagnóstico 360º em PDF")
+            "PDF Completo",
+            "Gráfico Radar",
+            "Matriz GUT",
+            "Plano de Ação",
+            "Instruções Finais",
+            "Gráficos Especiais"
+            ])
+            fig_radar.write_image("radar_temp.png")
+            fig_gut.write_image("gut_temp.png")
+            fig_top10.write_image("top10_temp.png")
+            fig_linha.write_image("linha_temp.png")
     pdf = FPDF()
 
     if opcoes_exportacao == "PDF Completo":
@@ -345,5 +344,5 @@ with aba4:
             ]
             secoes = [
                 
-                for titulo, imagem in secoes:
-                pdf.add_page()
+        for titulo, imagem in secoes:
+            pdf.add_page()
