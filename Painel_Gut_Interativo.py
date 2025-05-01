@@ -15,6 +15,11 @@ with col1:
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=240)
 with col2:
+        if 'nome_cliente' in st.session_state and st.session_state['nome_cliente']:
+        nome_cliente = st.session_state['nome_cliente']
+    else:
+        nome_cliente = ""
+
     st.markdown(f"""
         <div style='text-align: center;'>
             <h1>Diagnóstico Potencialize 360º</h1>
