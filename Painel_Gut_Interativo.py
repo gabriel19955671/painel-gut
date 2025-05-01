@@ -275,6 +275,32 @@ with aba4:
                         valor = str(row[col])[:35]
                         pdf.cell(40, 10, valor, border=1)
                     pdf.ln()
+            elif titulo == "Top 10 Problemas":
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Top 10 Problemas - Tabela:", ln=True)
+                pdf.set_font("Arial", "", 10)
+                for col in top10.columns:
+                    pdf.cell(40, 10, str(col)[:15], border=1)
+                pdf.ln()
+                for _, row in top10.iterrows():
+                    for col in top10.columns:
+                        valor = str(row[col])[:35]
+                        pdf.cell(40, 10, valor, border=1)
+                    pdf.ln()
+            elif titulo == "Evolução por Área":
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Evolução por Área - Tabela:", ln=True)
+                pdf.set_font("Arial", "", 10)
+                for col in media_por_area.columns:
+                    pdf.cell(40, 10, str(col)[:15], border=1)
+                pdf.ln()
+                for _, row in media_por_area.iterrows():
+                    for col in media_por_area.columns:
+                        valor = str(row[col])[:35]
+                        pdf.cell(40, 10, valor, border=1)
+                    pdf.ln()
             elif titulo == "Instruções Finais":
                 pdf.multi_cell(0, 10, instrucoes_finais)
 
