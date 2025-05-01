@@ -247,4 +247,3 @@ with aba4:
         with open("diagnostico_360_exportado.pdf", "rb") as f:
             st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
 
-with aba5:
