@@ -13,7 +13,7 @@ col_logo_esquerdo, col_restante = st.columns([1, 6])
 with col_logo_esquerdo:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=160)  # AUMENTADO
+        st.image(logo_img, width=240)  # AUMENTADO
     else:
         st.warning("Logomarca não encontrada.")
 
@@ -192,9 +192,9 @@ with aba4:
             pdf.add_page()
             if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
-                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
-                pdf.ln(30)
-                pdf.set_font("Arial", "B", 18)
+                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
+                pdf.ln(40)
+                pdf.set_font("Arial", "B", 20)
                 pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
                 pdf.ln(10)
                 pdf.set_font("Arial", "", 14)
@@ -204,8 +204,12 @@ with aba4:
 
             if os.path.exists("logo_PR_FIXA.png"):
                 pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
-            pdf.set_font("Arial", "B", 14)
-            pdf.cell(0, 10, titulo, ln=True)
+            pdf.set_font("Arial", "B", 16)
+            pdf.set_y(10)
+            pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+            pdf.set_font("Arial", "", 10)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente} | Data: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+            pdf.ln(10)
             pdf.set_font("Arial", "", 12)
 
             if imagem and os.path.exists(imagem):
