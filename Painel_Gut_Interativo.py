@@ -256,8 +256,6 @@ with aba4:
     "Este diagnóstico tem como objetivo oferecer uma visão estratégica 360º sobre os principais pontos de atenções, "
     "oportunidades de melhoria e indicadores operacionais do seu negócio.
 "
-    "oportunidades de melhoria e indicadores operacionais do seu negócio.
-"
     "Por meio de uma análise baseada em dados e ferramentas como Radar de Avaliação, Matriz GUT e Plano de Ação Estruturado, "
     "este relatório visa orientar decisões e fortalecer a eficiência dos processos internos da sua empresa."
 )
