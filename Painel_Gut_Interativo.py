@@ -9,17 +9,22 @@ from PIL import Image
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
 # TOPO COM LOGOMARCA FIXA
-col_logo_esquerdo, col_logo_direito = st.columns([1, 1])
-with col_logo_esquerdo:
+col1, col2, col3 = st.columns([1, 2, 1])
+with col1:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=240)
-    else:
-        st.warning("Logomarca não encontrada.")
-with col_logo_direito:
+with col2:
+    st.markdown(f"""
+        <div style='text-align: center;'>
+            <h1>Diagnóstico Potencialize 360º</h1>
+            <h3 style='margin-top: -10px;'>{nome_cliente}</h3>
+        </div>
+    """, unsafe_allow_html=True)
+with col3:
     if os.path.exists("logo_cliente_temp.png"):
         logo_cliente = Image.open("logo_cliente_temp.png")
-        st.image(logo_cliente, width=200)
+        st.image(logo_cliente, width=180)
 
         st.warning("Logomarca não encontrada.")
 
