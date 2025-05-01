@@ -21,9 +21,9 @@ with col2:
         nome_cliente = ""
 
     st.markdown(f"""
-        <div style='text-align: center;'>
-            <h1>Diagnóstico Potencialize 360º</h1>
-            <h3 style='margin-top: -10px;'>{nome_cliente}</h3>
+        <div style='text-align: center; padding-top: 15px; padding-bottom: 5px;'>
+            <h1 style='font-size: 32px; margin-bottom: 5px;'>Diagnóstico Potencialize 360º</h1>
+            <h3 style='margin-top: 0; font-size: 20px; color: #333;'>{nome_cliente}</h3>
         </div>
     """, unsafe_allow_html=True)
 with col3:
