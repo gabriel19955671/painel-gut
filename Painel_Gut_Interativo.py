@@ -5,58 +5,29 @@ import plotly.graph_objects as go
 from io import BytesIO
 from fpdf import FPDF
 import os
+from PIL import Image
 
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
-# SIDEBAR
+# TOPO COM LOGOMARCA FIXA
 col_logo_esquerdo, col_restante = st.columns([1, 6])
 with col_logo_esquerdo:
-    from PIL import Image
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=120)
     else:
         st.warning("Logomarca não encontrada.")
+
+# SIDEBAR
 data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
 st.session_state['data_diagnostico'] = data_diagnostico
 nome_cliente = st.sidebar.text_input("Nome do Cliente")
 st.session_state['nome_cliente'] = nome_cliente
 uploaded_logo = st.sidebar.file_uploader("Anexar Logomarca do Cliente", type=["png", "jpg", "jpeg"])
 
-# Logomarca fixa com PIL na sidebar
-with st.sidebar:
-    from PIL import Image
-    if os.path.exists("logo_PR_FIXA.png"):
-        logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=150)
-    else:
-        st.warning("Logomarca não encontrada.")
-        st.error("Erro ao carregar logomarca.")
-    if os.path.exists("logo_PR_FIXA.png"):
-        from PIL import Image
-        logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=150)
-        st.warning("Logomarca não encontrada.")
-
 if uploaded_logo:
     with open("logo_cliente_temp.png", "wb") as f:
         f.write(uploaded_logo.read())
-
-# Logomarca fixa na sidebar
-with st.sidebar:
-    from PIL import Image
-    if os.path.exists("logo_PR_FIXA.png"):
-        logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=150)
-    else:
-        st.warning("Logomarca não encontrada.")
-        st.error("Erro ao carregar logomarca.")
-    if os.path.exists("logo_PR_FIXA.png"):
-        from PIL import Image
-        logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=150)
-        st.warning("Logomarca não encontrada.")
-    from PIL import Image
 
 # CARREGAMENTO DE DADOS
 @st.cache_data
@@ -70,9 +41,9 @@ def carregar_unificado():
     return df_gut, df_radar, df_plano
 
 df_gut, df_radar, df_plano = carregar_unificado()
-
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
+# ABAS
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "📊 Gráfico Radar",
     "🗂️ Matriz GUT",
@@ -148,7 +119,6 @@ with aba2:
         textposition="top center",
         marker=dict(size=df_gut_filtrado['Tendência']*5, color=df_gut_filtrado['Score'], colorscale='Reds', showscale=True)
     )])
-
     fig_gut.update_layout(
         title="Visualização Matriz GUT",
         xaxis_title="Urgência",
@@ -173,8 +143,6 @@ with aba3:
                 (df_plano['Prazo'].isin(filtro_prazo)) &
                 (df_plano['Responsável'].isin(filtro_resp))
             ]
-            df_filtrado = df_plano[df_plano['Prazo'].isin(filtro_prazo)]
-
     st.dataframe(df_filtrado, use_container_width=True)
 
 # ABA 5 - Instruções Finais
@@ -183,6 +151,7 @@ with aba5:
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
     imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
     if imagem_instrucao:
+        with open("img_instrucao_temp.png", "wb") as f:
             f.write(imagem_instrucao.read())
     st.session_state['instrucoes_digitadas'] = instrucoes
 
@@ -236,21 +205,19 @@ with aba4:
         for titulo, imagem in secoes:
             pdf.add_page()
             if imagem == "Capa":
-                pdf.set_font("Arial", "B", 18)
+                if os.path.exists("logo_PR_FIXA.png"):
+                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
                 pdf.ln(30)
+                pdf.set_font("Arial", "B", 18)
                 pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
                 pdf.ln(10)
                 pdf.set_font("Arial", "", 14)
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
-                if os.path.exists("logo_PR_FIXA.png"):
-                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
                 continue
             pdf.set_font("Arial", "B", 14)
             pdf.cell(0, 10, titulo, ln=True)
             pdf.set_font("Arial", "", 12)
-            if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
             if imagem and os.path.exists(imagem):
                 pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
