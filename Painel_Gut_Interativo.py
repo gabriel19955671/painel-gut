@@ -258,45 +258,46 @@ pdf.ln(10)
 
 
             
-if opcoes_exportacao == "PDF Completo":
-    fig_radar.write_image("radar_temp.png")
-    fig_gut.write_image("gut_temp.png")
-    fig_top10.write_image("top10_temp.png")
-    fig_linha.write_image("linha_temp.png")
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-    pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
-    pdf.ln(10)
-    if os.path.exists("cliente_logo_temp.png"):
-        pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+    if opcoes_exportacao == "PDF Completo":
+        fig_radar.write_image("radar_temp.png")
+        fig_gut.write_image("gut_temp.png")
+        fig_top10.write_image("top10_temp.png")
+        fig_linha.write_image("linha_temp.png")
 
-    pdf.add_page()
-    pdf.image("radar_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+        pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
+        pdf.ln(10)
+        if os.path.exists("cliente_logo_temp.png"):
+            pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
 
-    pdf.add_page()
-    pdf.image("gut_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.image("radar_temp.png", x=10, y=40, w=190)
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, "Plano de Ação:", ln=True)
-    for i, row in df_plano.iterrows():
-        pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
+        pdf.add_page()
+        pdf.image("gut_temp.png", x=10, y=40, w=190)
 
-    pdf.add_page()
-    pdf.cell(0, 10, "Instruções Finais:", ln=True)
-    pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
-    if os.path.exists("instrucao_img_temp.png"):
-        pdf.image("instrucao_img_temp.png", x=10, w=150)
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(0, 10, "Plano de Ação:", ln=True)
+        for i, row in df_plano.iterrows():
+            pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
 
-    pdf.add_page()
-    pdf.image("top10_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.cell(0, 10, "Instruções Finais:", ln=True)
+        pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
+        if os.path.exists("instrucao_img_temp.png"):
+            pdf.image("instrucao_img_temp.png", x=10, w=150)
 
-    pdf.add_page()
-    pdf.image("linha_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.image("top10_temp.png", x=10, y=40, w=190)
+
+        pdf.add_page()
+        pdf.image("linha_temp.png", x=10, y=40, w=190)
 elif opcoes_exportacao == "PDF por Área":
                 for area in df_radar['Área'].unique():
                     pdf.add_page()
@@ -384,45 +385,46 @@ pdf.ln(10)
 
 
             
-if opcoes_exportacao == "PDF Completo":
-    fig_radar.write_image("radar_temp.png")
-    fig_gut.write_image("gut_temp.png")
-    fig_top10.write_image("top10_temp.png")
-    fig_linha.write_image("linha_temp.png")
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-    pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
-    pdf.ln(10)
-    if os.path.exists("cliente_logo_temp.png"):
-        pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+    if opcoes_exportacao == "PDF Completo":
+        fig_radar.write_image("radar_temp.png")
+        fig_gut.write_image("gut_temp.png")
+        fig_top10.write_image("top10_temp.png")
+        fig_linha.write_image("linha_temp.png")
 
-    pdf.add_page()
-    pdf.image("radar_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
+        pdf.set_font("Arial", '', 12)
+        pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+        pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
+        pdf.ln(10)
+        if os.path.exists("cliente_logo_temp.png"):
+            pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
 
-    pdf.add_page()
-    pdf.image("gut_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.image("radar_temp.png", x=10, y=40, w=190)
 
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, "Plano de Ação:", ln=True)
-    for i, row in df_plano.iterrows():
-        pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
+        pdf.add_page()
+        pdf.image("gut_temp.png", x=10, y=40, w=190)
 
-    pdf.add_page()
-    pdf.cell(0, 10, "Instruções Finais:", ln=True)
-    pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
-    if os.path.exists("instrucao_img_temp.png"):
-        pdf.image("instrucao_img_temp.png", x=10, w=150)
+        pdf.add_page()
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(0, 10, "Plano de Ação:", ln=True)
+        for i, row in df_plano.iterrows():
+            pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
 
-    pdf.add_page()
-    pdf.image("top10_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.cell(0, 10, "Instruções Finais:", ln=True)
+        pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
+        if os.path.exists("instrucao_img_temp.png"):
+            pdf.image("instrucao_img_temp.png", x=10, w=150)
 
-    pdf.add_page()
-    pdf.image("linha_temp.png", x=10, y=40, w=190)
+        pdf.add_page()
+        pdf.image("top10_temp.png", x=10, y=40, w=190)
+
+        pdf.add_page()
+        pdf.image("linha_temp.png", x=10, y=40, w=190)
 elif opcoes_exportacao == "PDF por Área":
                 for area in df_radar['Área'].unique():
                     pdf.add_page()
