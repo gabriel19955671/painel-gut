@@ -72,28 +72,65 @@ aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "✨ Gráficos Especiais"
 ])
 
+with aba1:
+    st.subheader("Gráfico Radar por Departamento, Área e Avaliação")
+    fig_radar = go.Figure()
+    if not df_radar.empty:
+        df_agrupado = df_radar.groupby('Área')['Avaliação'].mean().reset_index()
+        fig_radar.add_trace(go.Scatterpolar(
+            r=df_agrupado['Avaliação'],
+            theta=df_agrupado['Área'],
+            fill='toself',
+            marker=dict(size=8),
+            line=dict(width=3)
+        ))
+    st.plotly_chart(fig_radar, use_container_width=True)
+    st.dataframe(df_radar, use_container_width=True)
+
+with aba2:
+    st.subheader("Matriz GUT - Priorização das Dores")
+    fig_gut = go.Figure()
+    fig_gut.add_trace(go.Scatter(
+        x=df_gut['Urgência'],
+        y=df_gut['Gravidade'],
+        mode='markers',
+        marker=dict(size=df_gut['Tendência']*5, color=df_gut['Score'], colorscale='Reds', showscale=True),
+        text=df_gut['Problema']
+    ))
+    st.plotly_chart(fig_gut, use_container_width=True)
+    st.dataframe(df_gut, use_container_width=True)
+
+with aba3:
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    st.dataframe(df_plano, use_container_width=True)
+
+with aba5:
+    st.subheader("Instruções Pós-Diagnóstico")
+    instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
+    st.session_state['instrucoes_digitadas'] = instrucoes
+
+with aba6:
+    st.subheader("Gráficos Especiais")
+    st.plotly_chart(go.Figure(go.Bar(x=top10['Score'], y=top10['Problema'], orientation='h')), use_container_width=True)
+    fig_linha = go.Figure()
+    for dep in media_por_area['Departamento'].unique():
+        df_dep = media_por_area[media_por_area['Departamento'] == dep]
+        fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
+    st.plotly_chart(fig_linha, use_container_width=True)
+    st.dataframe(top10, use_container_width=True)
+    st.dataframe(media_por_area, use_container_width=True)
+
 with aba4:
     st.subheader("📅 Exportar Diagnóstico 360º em PDF")
-    from fpdf import FPDF
-    import plotly.io as pio
-
-    opcao = st.selectbox("Escolha o conteúdo para exportar:", ["PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
+    opcao = st.selectbox("Escolha o conteúdo para exportar:", [
+        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
 
     if st.button("Gerar PDF"):
-        # Gerar imagens dos gráficos
-        fig_radar = go.Figure()
+        fig_top10.write_image("top10_temp.png")
+        fig_linha.write_image("linha_temp.png")
         fig_radar.write_image("radar_temp.png")
-
-        fig_gut = go.Figure()
         fig_gut.write_image("gut_temp.png")
 
-        fig_top10 = go.Figure()
-        fig_top10.write_image("top10_temp.png")
-
-        fig_linha = go.Figure()
-        fig_linha.write_image("linha_temp.png")
-
-        # Criar PDF
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
