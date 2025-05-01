@@ -251,6 +251,15 @@ with aba4:
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
                 pdf.ln(10)
+                pdf.set_font("Arial", "", 11)
+                texto_apresentacao = (
+                    "Este diagnóstico tem como objetivo oferecer uma visão estratégica 360º sobre os principais pontos de atenções, "
+                    "oportunidades de melhoria e indicadores operacionais do seu negócio.
+"
+                    "Por meio de uma análise baseada em dados e ferramentas como Radar de Avaliação, Matriz GUT e Plano de Ação Estruturado, "
+                    "este relatório visa orientar decisões e fortalecer a eficiência dos processos internos da sua empresa."
+                )
+                pdf.multi_cell(0, 10, texto_apresentacao, align="J")
                 continue
 
             if os.path.exists("logo_PR_FIXA.png"):
