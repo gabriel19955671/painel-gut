@@ -213,7 +213,8 @@ with aba4:
         fig_radar.write_image("radar_temp.png")
         fig_gut.write_image("gut_temp.png")
         pdf = FPDF()
-pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.set_auto_page_break(auto=True, margin=15)
         secoes = [("Diagnóstico 360º", "Capa")]
         if opcoes_exportacao == "PDF Completo":
             secoes += [
@@ -228,6 +229,7 @@ pdf.set_auto_page_break(auto=True, margin=15)
 
         for titulo, imagem in secoes:
             pdf.add_page()
+            pdf.set_font("Arial", "", 12)
 pdf.set_font("Arial", "", 12)
             if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
