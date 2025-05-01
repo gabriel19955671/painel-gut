@@ -79,6 +79,7 @@ with aba1:
     with col3:
         avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, (0.0, 10.0), step=0.1)
 
+    # Calcula df_plot globalmente para uso no PDF
     df_plot = df_radar[
         (df_radar['Departamento'].isin(depto_selecionado)) &
         (df_radar['Área'].isin(area_selecionada)) &
