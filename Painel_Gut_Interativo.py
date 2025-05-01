@@ -22,31 +22,10 @@ if uploaded_logo:
 
 if st.sidebar.button("Remover Logomarca do Cliente"):
     if os.path.exists("logo_PR_FIXA.png"):
-            # Logo da Potencialize para PDF
-            
-        os.remove("cliente_logo_temp.png")
-        st.sidebar.success("Logomarca removida com sucesso.")
-
-# CABEÇALHO
-col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
-with col_logo:
-    import os
-if os.path.exists("logo_PR_FIXA.png"):
-    with open("logo_PR_FIXA.png", "rb") as img:
-        st.image(img, width=180)
-else:
-    st.warning("⚠️ Logo não encontrada. Verifique se 'logo_PR_FIXA.png' está na mesma pasta.")
-with col_titulo:
-    st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
-    if nome_cliente:
-        st.markdown(f"<h3 style='text-align: center; color: #555555;'>{nome_cliente}</h3>", unsafe_allow_html=True)
-with col_logo_cliente:
-    if os.path.exists("logo_PR_FIXA.png"):
-            # Logo da Potencialize para PDF
-            
-        if os.path.exists("logo_PR_FIXA.png"):
     with open("logo_PR_FIXA.png", "rb") as img:
         st.image(img, width=150)
+else:
+    st.warning("⚠️ Logomarca não encontrada.")
 else:
     st.warning("⚠️ Logomarca não encontrada.")
 
