@@ -171,6 +171,32 @@ with aba5:
             f.write(imagem_instrucao.read())
     st.session_state['instrucoes_digitadas'] = instrucoes
 
+with aba6:
+    st.subheader("✨ Gráficos Especiais")
+
+    st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
+    fig_top10 = go.Figure(go.Bar(
+        x=top10['Score'],
+        y=top10['Problema'],
+        orientation='h',
+        marker_color='crimson'
+    ))
+    fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
+    st.plotly_chart(fig_top10, use_container_width=True)
+
+    st.markdown("#### 📈 Evolução Média das Avaliações por Área")
+    fig_linha = go.Figure()
+    for dep in media_por_area['Departamento'].unique():
+        df_dep = media_por_area[media_por_area['Departamento'] == dep]
+        fig_linha.add_trace(go.Scatter(
+            x=df_dep['Área'],
+            y=df_dep['Avaliação'],
+            mode='lines+markers',
+            name=dep
+        ))
+    fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
+    st.plotly_chart(fig_linha, use_container_width=True)
+
 with aba4:
     st.subheader("📅 Exportar Diagnóstico 360º em PDF")
     opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
