@@ -252,9 +252,6 @@ with aba4:
                 pdf.set_font("Arial", "B", 20)
                 pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
                 pdf.ln(10)
-                pdf.set_font("Arial", "", 14)
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
                 continue
 
             if os.path.exists("logo_PR_FIXA.png"):
