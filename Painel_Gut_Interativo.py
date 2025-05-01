@@ -250,6 +250,7 @@ with aba4:
                 pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
             pdf.set_font("Arial", "B", 16)
             pdf.set_y(30)
+            pdf.ln(5)
             pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
             pdf.set_font("Arial", "", 10)
             pdf.cell(0, 10, f"Cliente: {nome_cliente} | Data: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
