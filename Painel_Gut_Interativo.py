@@ -236,6 +236,44 @@ with aba4:
             elif titulo == "Plano de Ação":
                 for _, row in df_plano.iterrows():
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Tabela Completa:", ln=True)
+                pdf.set_font("Arial", "", 10)
+                for col in df_plano.columns:
+                    pdf.cell(40, 10, col, border=1)
+                pdf.ln()
+                for _, row in df_plano.iterrows():
+                    for col in df_plano.columns:
+                        valor = str(row[col])[:35]
+                        pdf.cell(40, 10, valor, border=1)
+                    pdf.ln()
+            elif titulo == "Gráfico Radar":
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Tabela de Pontuações Filtradas:", ln=True)
+                pdf.set_font("Arial", "", 10)
+                for col in df_plot[['Departamento', 'Área', 'Avaliação']].columns:
+                    pdf.cell(50, 10, col, border=1)
+                pdf.ln()
+                for _, row in df_plot[['Departamento', 'Área', 'Avaliação']].iterrows():
+                    for col in df_plot[['Departamento', 'Área', 'Avaliação']].columns:
+                        valor = str(row[col])[:30]
+                        pdf.cell(50, 10, valor, border=1)
+                    pdf.ln()
+            elif titulo == "Matriz GUT":
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "Tabela GUT:", ln=True)
+                pdf.set_font("Arial", "", 10)
+                for col in df_gut_filtrado.columns:
+                    pdf.cell(40, 10, str(col)[:15], border=1)
+                pdf.ln()
+                for _, row in df_gut_filtrado.iterrows():
+                    for col in df_gut_filtrado.columns:
+                        valor = str(row[col])[:35]
+                        pdf.cell(40, 10, valor, border=1)
+                    pdf.ln()
             elif titulo == "Instruções Finais":
                 pdf.multi_cell(0, 10, instrucoes_finais)
 
