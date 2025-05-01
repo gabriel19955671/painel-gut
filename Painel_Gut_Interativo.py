@@ -30,8 +30,12 @@ if st.sidebar.button("Remover Logomarca do Cliente"):
 # CABEÇALHO
 col_logo, col_titulo, col_logo_cliente = st.columns([1, 5, 1])
 with col_logo:
-    if os.path.exists("logo PR (3) (2).png"):
-        st.image('logo PR (3) (2).png', width=250)
+    import os
+if os.path.exists("logo_PR_FIXA.png"):
+    with open("logo_PR_FIXA.png", "rb") as img:
+        st.image(img, width=180)
+else:
+    st.warning("⚠️ Logo não encontrada. Verifique se 'logo_PR_FIXA.png' está na mesma pasta.")
 with col_titulo:
     st.markdown("<h1 style='text-align: center;'>Diagnóstico 360º - Potencialize Resultados</h1>", unsafe_allow_html=True)
     if nome_cliente:
@@ -40,7 +44,11 @@ with col_logo_cliente:
     if os.path.exists("logo_PR_FIXA.png"):
             # Logo da Potencialize para PDF
             
-        st.image('cliente_logo_temp.png', width=150)
+        if os.path.exists("logo_PR_FIXA.png"):
+    with open("logo_PR_FIXA.png", "rb") as img:
+        st.image(img, width=150)
+else:
+    st.warning("⚠️ Logomarca não encontrada.")
 
 # CARREGAMENTO DE DADOS
 @st.cache_data
@@ -208,13 +216,48 @@ with aba4:
         "Instruções Finais",
         "Gráficos Especiais"
     ])
-    if st.button("Gerar PDF"):
-        pdf = FPDF()
+    
+if st.button("Gerar PDF"):
+    fig_radar.write_image("radar_temp.png")
+    fig_gut.write_image("gut_temp.png")
+    fig_top10.write_image("top10_temp.png")
+    fig_linha.write_image("linha_temp.png")
+
+    pdf = FPDF()
+
+    if opcoes_exportacao == "PDF Completo":
+        secoes = [
+            ("Diagnóstico 360º", "Capa"),
+            ("Gráfico Radar", "radar_temp.png"),
+            ("Matriz GUT", "gut_temp.png"),
+            ("Plano de Ação", None),
+            ("Instruções Finais", None),
+            ("Top 10 Problemas", "top10_temp.png"),
+            ("Evolução por Área", "linha_temp.png")
+        ]
+    else:
+        secoes = [(opcoes_exportacao, None)]
+
+    for titulo, imagem in secoes:
         pdf.add_page()
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(0, 10, f"{opcoes_exportacao} - Diagnóstico 360º", ln=True, align="C")
+        if os.path.exists("logo_PR_FIXA.png"):
+            pdf.image("logo_PR_FIXA.png", x=140, y=8, w=60)
+
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(0, 10, titulo, ln=True)
         pdf.set_font("Arial", '', 12)
-        pdf.multi_cell(0, 10, f"Dados exportados: {opcoes_exportacao} - Cliente: {nome_cliente}")
-        pdf.output("diagnostico_360_exportado.pdf")
-        with open("diagnostico_360_exportado.pdf", "rb") as f:
-            st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
+
+        if imagem == "Capa":
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
+        elif imagem and os.path.exists(imagem):
+            pdf.image(imagem, x=10, y=30, w=190)
+        elif titulo == "Plano de Ação":
+            for _, row in df_plano.iterrows():
+                pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
+        elif titulo == "Instruções Finais":
+            pdf.multi_cell(0, 10, instrucoes_finais)
+
+    pdf.output("diagnostico_360_exportado.pdf")
+    with open("diagnostico_360_exportado.pdf", "rb") as f:
+        st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
