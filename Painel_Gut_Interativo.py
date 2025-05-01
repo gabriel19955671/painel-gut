@@ -241,8 +241,12 @@ with aba4:
             pdf.cell(0, 10, titulo, ln=True)
             pdf.set_font("Arial", "", 12)
             if imagem == "Capa":
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime("%d/%m/%Y")}", ln=True)
+            pdf.set_font("Arial", "B", 18)
+            pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
+            pdf.ln(10)
+            pdf.set_font("Arial", "", 14)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+            pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
             elif imagem and os.path.exists(imagem):
                 pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
