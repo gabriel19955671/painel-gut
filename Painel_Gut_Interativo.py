@@ -249,7 +249,7 @@ if os.path.exists("cliente_logo_temp.png"):
     pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
 pdf.ln(10)
 
-            pdf = FPDF()
+        pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", 'B', 16)
             pdf.cell(0, 10, f"{opcoes_exportacao} - Diagnóstico 360º", ln=True, align="C")
@@ -376,7 +376,7 @@ if os.path.exists("cliente_logo_temp.png"):
     pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
 pdf.ln(10)
 
-            pdf = FPDF()
+        pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", 'B', 16)
             pdf.cell(0, 10, f"{opcoes_exportacao} - Diagnóstico 360º", ln=True, align="C")
