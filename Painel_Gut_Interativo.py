@@ -266,7 +266,7 @@ with aba4:
                     pdf.image("top10_temp.png", x=10, y=pdf.get_y(), w=180)
                     pdf.ln(5)
                 if os.path.exists("linha_temp.png"):
-                    pdf.image("linha_temp.png", x=10, y=pdf.get_y(), w=180).sort_values(by='Score', ascending=False).head(10)
+                    pdf.image("linha_temp.png", x=10, y=pdf.get_y(), w=180)
                 for _, row in top10.iterrows():
                     pdf.multi_cell(0, 10, f"Problema: {row['Problema']} | Score: {row['Score']}")
                 pdf.ln(5)
