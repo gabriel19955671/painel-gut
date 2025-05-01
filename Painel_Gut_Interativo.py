@@ -9,7 +9,14 @@ import os
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
 # SIDEBAR
-st.sidebar.title("Configurações")
+col_logo_esquerdo, col_restante = st.columns([1, 6])
+with col_logo_esquerdo:
+    from PIL import Image
+    if os.path.exists("logo_PR_FIXA.png"):
+        logo_img = Image.open("logo_PR_FIXA.png")
+        st.image(logo_img, width=120)
+    else:
+        st.warning("Logomarca não encontrada.")
 data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
 st.session_state['data_diagnostico'] = data_diagnostico
 nome_cliente = st.sidebar.text_input("Nome do Cliente")
@@ -209,6 +216,7 @@ with aba4:
         fig_top10.write_image("top10_temp.png")
         fig_linha.write_image("linha_temp.png")
         pdf = FPDF()
+opcoes_exportacao = "PDF Completo"  # valor padrão para evitar erro
         if opcoes_exportacao == "PDF Completo":
             secoes = [
                 ("Diagnóstico 360º", "Capa"),
