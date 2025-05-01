@@ -24,12 +24,13 @@ with col2:
         <div style='text-align: center; padding-top: 15px; padding-bottom: 5px;'>
             <h1 style='font-size: 32px; margin-bottom: 5px;'>Diagnóstico Potencialize 360º</h1>
             <h3 style='margin-top: 0; font-size: 20px; color: #333;'>{nome_cliente}</h3>
+<h4 style='margin-top: 0; font-size: 16px; color: #666;'>{data_diagnostico.strftime('%d/%m/%Y')}</h4>
         </div>
     """, unsafe_allow_html=True)
 with col3:
     if os.path.exists("logo_cliente_temp.png"):
         logo_cliente = Image.open("logo_cliente_temp.png")
-        st.image(logo_cliente, width=180)
+        st.image(logo_cliente, width=220)
 
         st.warning("Logomarca não encontrada.")
 
