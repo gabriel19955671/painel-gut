@@ -58,6 +58,11 @@ def carregar_unificado():
 df_gut, df_radar, df_plano = carregar_unificado()
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
+# Dados globais para exportação
+# (evita NameError durante geração do PDF)
+top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
+
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
     "📊 Gráfico Radar",
     "💂️ Matriz GUT",
