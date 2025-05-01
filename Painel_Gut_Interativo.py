@@ -244,12 +244,11 @@ with aba4:
                     pdf.image("logo_cliente_temp.png", x=160, y=12, w=35)
                 pdf.ln(40)
                 pdf.set_font("Arial", "B", 20)
-                pdf.set_y(90)
+                pdf.set_y(110)
                 pdf.set_font("Arial", "B", 20)
                 pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
                 pdf.set_font("Arial", "", 12)
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
                 pdf.ln(10)
                 continue
