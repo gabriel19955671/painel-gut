@@ -45,8 +45,15 @@ def carregar_unificado():
     df_radar = pd.read_excel(arquivo, sheet_name='Radar')
     df_gut = pd.read_excel(arquivo, sheet_name='Matriz GUT')
     df_plano = pd.read_excel(arquivo, sheet_name='Plano de Ação')
-    if 'Score' not in df_gut.columns:
+
+    # Usar Pontuação no lugar de Score
+    if 'Pontuação' in df_gut.columns:
+        df_gut['Pontuação'] = pd.to_numeric(df_gut['Pontuação'], errors='coerce')
+        df_gut.drop(columns=[col for col in df_gut.columns if col.lower() == 'score'], inplace=True, errors='ignore')
+        df_gut.rename(columns={'Pontuação': 'Score'}, inplace=True)
+    elif 'Score' not in df_gut.columns:
         df_gut['Score'] = df_gut['Gravidade'] * df_gut['Urgência'] * df_gut['Tendência']
+
     return df_gut, df_radar, df_plano
 
 df_gut, df_radar, df_plano = carregar_unificado()
