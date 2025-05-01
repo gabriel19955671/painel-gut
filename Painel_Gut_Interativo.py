@@ -232,9 +232,10 @@ with aba4:
 
         for titulo, imagem in secoes:
             pdf.add_page()
-            if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
-            pdf.set_y(30)
+            if titulo != "Diagnóstico 360º":
+                if os.path.exists("logo_PR_FIXA.png"):
+                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
+                pdf.set_y(30)
             pdf.ln(5)
             pdf.set_font("Arial", "B", 16)
             pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
