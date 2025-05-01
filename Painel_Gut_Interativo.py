@@ -236,7 +236,7 @@ with aba4:
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
                 if os.path.exists("logo_cliente_temp.png"):
-                    pdf.image("logo_cliente_temp.png", x=150, y=8, w=50)
+                    pdf.image("logo_cliente_temp.png", x=160, y=12, w=35)
                 pdf.ln(40)
                 pdf.set_font("Arial", "B", 20)
                 pdf.cell(0, 20, "Diagnóstico 360º", ln=True, align="C")
@@ -249,7 +249,7 @@ with aba4:
             if os.path.exists("logo_PR_FIXA.png"):
                 pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
             pdf.set_font("Arial", "B", 16)
-            pdf.set_y(10)
+            pdf.set_y(20)
             pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
             pdf.set_font("Arial", "", 10)
             pdf.cell(0, 10, f"Cliente: {nome_cliente} | Data: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
