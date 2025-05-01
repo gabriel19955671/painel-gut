@@ -221,7 +221,7 @@ from matplotlib.backends.backend_agg import RendererAgg
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
-    
+
 with aba4:
     st.subheader("Exportar Diagnóstico 360º em PDF")
     opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
@@ -229,7 +229,7 @@ with aba4:
         "Gráfico Radar",
         "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"
     ])
-    
+
     if st.button("Gerar PDF"):
         with st.spinner("Gerando PDF..."):
 
@@ -256,7 +256,7 @@ pdf.ln(10)
             pdf.set_font("Arial", '', 12)
             pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
 
-            
+
             if opcoes_exportacao == "PDF Completo":
                 fig_radar.write_image("radar_temp.png", width=800, height=600)
                 fig_gut.write_image("gut_temp.png", width=800, height=600)
@@ -382,7 +382,7 @@ pdf.ln(10)
             pdf.set_font("Arial", '', 12)
             pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
 
-            
+
             if opcoes_exportacao == "PDF Completo":
                 fig_radar.write_image("radar_temp.png", width=800, height=600)
                 fig_gut.write_image("gut_temp.png", width=800, height=600)
