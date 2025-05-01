@@ -20,7 +20,13 @@ if uploaded_logo:
     with open("cliente_logo_temp.png", "wb") as f:
         f.write(uploaded_logo.read())
 
-if st.sidebar.button("Remover Logomarca do Cliente"):
+# Logomarca fixa na sidebar
+with st.sidebar:
+    if os.path.exists("logo_PR_FIXA.png"):
+        with open("logo_PR_FIXA.png", "rb") as img:
+            st.image(img, width=150)
+    else:
+        st.warning("Logomarca não encontrada.")
 if os.path.exists("logo_PR_FIXA.png"):
     with open("logo_PR_FIXA.png", "rb") as img:
         st.image(img, width=150)
