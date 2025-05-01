@@ -18,14 +18,12 @@ uploaded_logo = st.sidebar.file_uploader("Anexar Logomarca do Cliente", type=["p
 
 # Logomarca fixa com PIL na sidebar
 with st.sidebar:
-    try:
-        from PIL import Image
-        if os.path.exists("logo_PR_FIXA.png"):
-            logo_img = Image.open("logo_PR_FIXA.png")
-            st.image(logo_img, width=150)
-        else:
-            st.warning("Logomarca não encontrada.")
-    except Exception as e:
+    from PIL import Image
+    if os.path.exists("logo_PR_FIXA.png"):
+        logo_img = Image.open("logo_PR_FIXA.png")
+        st.image(logo_img, width=150)
+    else:
+        st.warning("Logomarca não encontrada.")
         st.error("Erro ao carregar logomarca.")
     if os.path.exists("logo_PR_FIXA.png"):
         from PIL import Image
@@ -39,14 +37,12 @@ if uploaded_logo:
 
 # Logomarca fixa na sidebar
 with st.sidebar:
-    try:
-        from PIL import Image
-        if os.path.exists("logo_PR_FIXA.png"):
-            logo_img = Image.open("logo_PR_FIXA.png")
-            st.image(logo_img, width=150)
-        else:
-            st.warning("Logomarca não encontrada.")
-    except Exception as e:
+    from PIL import Image
+    if os.path.exists("logo_PR_FIXA.png"):
+        logo_img = Image.open("logo_PR_FIXA.png")
+        st.image(logo_img, width=150)
+    else:
+        st.warning("Logomarca não encontrada.")
         st.error("Erro ao carregar logomarca.")
     if os.path.exists("logo_PR_FIXA.png"):
         from PIL import Image
