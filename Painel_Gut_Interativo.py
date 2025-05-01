@@ -281,8 +281,49 @@ with aba4:
             pdf.set_font("Arial", "", 12)
 
             if imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=30, w=120)
-                pdf.ln(85)
+                pdf.ln(5)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, f"Tabela - {titulo}", ln=True)
+                pdf.set_font("Arial", "", 10)
+                if titulo == "Gráfico Radar":
+                    for col in df_plot[['Departamento', 'Área', 'Avaliação']].columns:
+                        pdf.cell(50, 10, col, border=1)
+                    pdf.ln()
+                    for _, row in df_plot[['Departamento', 'Área', 'Avaliação']].iterrows():
+                        for col in df_plot[['Departamento', 'Área', 'Avaliação']].columns:
+                            valor = str(row[col])[:30]
+                            pdf.cell(50, 10, valor, border=1)
+                        pdf.ln()
+                elif titulo == "Matriz GUT":
+                    for col in df_gut_filtrado.columns:
+                        pdf.cell(40, 10, str(col)[:15], border=1)
+                    pdf.ln()
+                    for _, row in df_gut_filtrado.iterrows():
+                        for col in df_gut_filtrado.columns:
+                            valor = str(row[col])[:35]
+                            pdf.cell(40, 10, valor, border=1)
+                        pdf.ln()
+                elif titulo == "Top 10 Problemas":
+                    for col in top10.columns:
+                        pdf.cell(40, 10, str(col)[:15], border=1)
+                    pdf.ln()
+                    for _, row in top10.iterrows():
+                        for col in top10.columns:
+                            valor = str(row[col])[:35]
+                            pdf.cell(40, 10, valor, border=1)
+                        pdf.ln()
+                elif titulo == "Evolução por Área":
+                    for col in media_por_area.columns:
+                        pdf.cell(40, 10, str(col)[:15], border=1)
+                    pdf.ln()
+                    for _, row in media_por_area.iterrows():
+                        for col in media_por_area.columns:
+                            valor = str(row[col])[:35]
+                            pdf.cell(40, 10, valor, border=1)
+                        pdf.ln()
+                pdf.ln(5)
+                pdf.image(imagem, x=10, y=pdf.get_y(), w=120)
+                pdf.ln(10)
             elif titulo == "Plano de Ação":
                 for _, row in df_plano.iterrows():
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
