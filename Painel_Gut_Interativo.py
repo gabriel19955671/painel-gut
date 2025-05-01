@@ -29,7 +29,6 @@ with st.sidebar:
         from PIL import Image
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=150)
-    else:
         st.warning("Logomarca não encontrada.")
 
 if uploaded_logo:
@@ -48,11 +47,8 @@ with st.sidebar:
         from PIL import Image
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=150)
-    else:
         st.warning("Logomarca não encontrada.")
     from PIL import Image
-else:
-    else:
 
 # CARREGAMENTO DE DADOS
 @st.cache_data
@@ -223,7 +219,6 @@ with aba4:
                 ("Top 10 Problemas", "top10_temp.png"),
                 ("Evolução por Área", "linha_temp.png")
             ]
-        else:
             secoes = [(opcoes_exportacao, None)]
         for titulo, imagem in secoes:
             pdf.add_page()
