@@ -8,6 +8,18 @@ from PIL import Image
 
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
+# CAPTURA DOS DADOS PARA USO NO TOPO
+# SIDEBAR
+data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
+st.session_state['data_diagnostico'] = data_diagnostico
+nome_cliente = st.sidebar.text_input("Nome do Cliente")
+st.session_state['nome_cliente'] = nome_cliente
+uploaded_logo = st.sidebar.file_uploader("Anexar Logomarca do Cliente", type=["png", "jpg", "jpeg"])
+
+if uploaded_logo:
+    with open("logo_cliente_temp.png", "wb") as f:
+        f.write(uploaded_logo.read())
+
 # TOPO COM LOGOMARCA FIXA
 col1, col2, col3 = st.columns([1, 2, 1])
 with col1:
