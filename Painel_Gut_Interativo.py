@@ -247,7 +247,7 @@ with aba4:
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
 if os.path.exists("cliente_logo_temp.png"):
     pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
-                pdf.ln(10)
+                    pdf.ln(10)
 
             pdf = FPDF()
             pdf.add_page()
@@ -337,7 +337,7 @@ if os.path.exists("cliente_logo_temp.png"):
                     pdf.multi_cell(0, 10, linha)
 
             elif opcoes_exportacao == "Plano de Ação":
-                pdf.ln(10)
+                    pdf.ln(10)
                 for index, row in df_plano.iterrows():
                     linha = f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}"
                     pdf.multi_cell(0, 10, linha)
@@ -373,7 +373,7 @@ if os.path.exists("cliente_logo_temp.png"):
                 pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
 if os.path.exists("cliente_logo_temp.png"):
     pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
-                pdf.ln(10)
+                    pdf.ln(10)
 
             pdf = FPDF()
             pdf.add_page()
