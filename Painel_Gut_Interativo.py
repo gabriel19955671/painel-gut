@@ -346,7 +346,7 @@ with aba4:
 
                 fig_radar.write_image("radar_temp.png", width=800, height=600)
                 pdf.image("radar_temp.png", x=10, y=40, w=190)
-            elif opcoes_exportacao == "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais":
+            elif opcoes_exportacao in ["Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"]:
                 fig_gut.write_image("gut_temp.png", width=800, height=600)
                 pdf.image("gut_temp.png", x=10, y=40, w=190)
 
