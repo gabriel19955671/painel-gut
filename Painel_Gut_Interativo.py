@@ -122,6 +122,96 @@ with aba1:
     st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
 
+
+with aba2:
+    st.subheader("Matriz GUT - Priorização das Dores")
+    try:
+        st.write(df_gut.head())
+        score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
+        df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
+        st.dataframe(df_gut_filtrado, use_container_width=True)
+
+        fig_gut = go.Figure(data=[go.Scatter(
+            x=df_gut_filtrado['Urgência'],
+            y=df_gut_filtrado['Gravidade'],
+            mode='markers+text',
+            text=df_gut_filtrado['Problema'],
+            textposition="top center",
+            marker=dict(size=df_gut_filtrado['Tendência']*5, color=df_gut_filtrado['Score'], colorscale='Reds', showscale=True)
+        )])
+
+        fig_gut.update_layout(
+            title="Visualização Matriz GUT",
+            xaxis_title="Urgência",
+            yaxis_title="Gravidade",
+            margin=dict(l=40, r=40, t=60, b=40),
+            height=500
+        )
+        st.plotly_chart(fig_gut, use_container_width=True)
+    except Exception as e:
+        st.error(f"Erro ao carregar Matriz GUT: {e}")
+
+with aba3:
+    st.subheader("Plano de Ação - Estratégias de Melhoria")
+    try:
+        col1, col2 = st.columns(2)
+        with col1:
+            prazos = df_plano['Prazo'].unique()
+            filtro_prazo = st.multiselect("Filtrar por Prazo", options=prazos, default=prazos)
+        with col2:
+            if 'Responsável' in df_plano.columns:
+                responsaveis = df_plano['Responsável'].dropna().unique()
+                filtro_resp = st.multiselect("Filtrar por Responsável", options=responsaveis, default=responsaveis)
+                df_filtrado = df_plano[
+                    (df_plano['Prazo'].isin(filtro_prazo)) &
+                    (df_plano['Responsável'].isin(filtro_resp))
+                ]
+            else:
+                st.warning("A coluna 'Responsável' não foi encontrada no Plano de Ação.")
+                df_filtrado = df_plano[df_plano['Prazo'].isin(filtro_prazo)]
+        st.dataframe(df_filtrado, use_container_width=True)
+    except Exception as e:
+        st.error(f"Erro ao carregar Plano de Ação: {e}")
+
+with aba5:
+    st.subheader("🧾 Instruções Pós-Diagnóstico")
+    try:
+        instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
+        imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
+        if imagem_instrucao:
+            with open("instrucao_img_temp.png", "wb") as f:
+                f.write(imagem_instrucao.read())
+            st.image("instrucao_img_temp.png", width=400)
+        st.session_state['instrucoes_digitadas'] = instrucoes
+    except Exception as e:
+        st.error(f"Erro ao carregar Instruções Finais: {e}")
+
+with aba6:
+    st.subheader("✨ Gráficos Especiais")
+    try:
+        st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
+        top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+        fig_top10 = go.Figure(go.Bar(
+            x=top10['Score'],
+            y=top10['Problema'],
+            orientation='h',
+            marker_color='crimson'
+        ))
+        fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
+        st.plotly_chart(fig_top10, use_container_width=True)
+
+        st.markdown("#### 📈 Evolução Média das Avaliações por Área")
+        media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
+        fig_linha = go.Figure()
+        for dep in media_por_area['Departamento'].unique():
+            df_dep = media_por_area[media_por_area['Departamento'] == dep]
+            fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
+        fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
+        st.plotly_chart(fig_linha, use_container_width=True)
+    except Exception as e:
+        st.error(f"Erro ao carregar Gráficos Especiais: {e}")
+
+
 # ABA 4 - Exportar PDF
 from matplotlib.backends.backend_agg import RendererAgg
 import matplotlib.pyplot as plt
@@ -346,7 +436,7 @@ with aba4:
 
                 fig_radar.write_image("radar_temp.png", width=800, height=600)
                 pdf.image("radar_temp.png", x=10, y=40, w=190)
-            elif opcoes_exportacao in ["Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"]:
+            elif opcoes_exportacao == "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais":
                 fig_gut.write_image("gut_temp.png", width=800, height=600)
                 pdf.image("gut_temp.png", x=10, y=40, w=190)
 
