@@ -257,7 +257,8 @@ with aba4:
             pdf.set_font("Arial", "", 12)
 
             if imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=30, w=190)
+                pdf.image(imagem, x=10, y=30, w=160)
+                pdf.ln(85)
             elif titulo == "Plano de Ação":
                 for _, row in df_plano.iterrows():
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
