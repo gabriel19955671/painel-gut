@@ -56,6 +56,30 @@ def carregar_unificado():
     return df_gut, df_radar, df_plano
 
 df_gut, df_radar, df_plano = carregar_unificado()
+
+# Pré-processamentos globais para PDF
+# Radar
+departamentos = sorted(df_radar['Departamento'].unique())
+areas = sorted(df_radar['Área'].unique())
+depto_selecionado = departamentos
+area_selecionada = areas
+avaliacao_min, avaliacao_max = 0.0, 10.0
+df_plot = df_radar[
+    (df_radar['Departamento'].isin(depto_selecionado)) &
+    (df_radar['Área'].isin(area_selecionada)) &
+    (df_radar['Avaliação'] >= avaliacao_min) &
+    (df_radar['Avaliação'] <= avaliacao_max)
+]
+
+# Matriz GUT
+score_min, score_max = 0, int(df_gut['Score'].max())
+df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
+
+# Top 10 Problemas
+top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+
+# Evolução por Área
+media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
 
 aba1, aba2, aba3, aba4, aba5, aba6 = st.tabs([
