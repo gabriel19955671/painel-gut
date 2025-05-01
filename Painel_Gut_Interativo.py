@@ -227,8 +227,8 @@ with aba4:
             secoes = [(opcoes_exportacao, None)]
 
         for titulo, imagem in secoes:
-        pdf.set_font("Arial", "", 12)
-                if imagem == "Capa":
+            pdf.set_font("Arial", "", 12")
+                            if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
                 if os.path.exists("logo_cliente_temp.png"):
