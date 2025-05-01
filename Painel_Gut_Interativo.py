@@ -39,6 +39,7 @@ with st.sidebar:
         st.warning("Logomarca não encontrada.")
 
 if uploaded_logo:
+    with open("logo_cliente_temp.png", "wb") as f:
         f.write(uploaded_logo.read())
 
 # Logomarca fixa na sidebar
@@ -212,12 +213,7 @@ with aba6:
 with aba4:
     st.subheader("Exportar Diagnóstico 360º em PDF")
     opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
-        "PDF Completo",
-        "Gráfico Radar",
-        "Matriz GUT",
-        "Plano de Ação",
-        "Instruções Finais",
-        "Gráficos Especiais"
+        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"
     ])
     if st.button("Gerar PDF"):
         fig_radar.write_image("radar_temp.png")
@@ -241,12 +237,12 @@ with aba4:
             pdf.add_page()
             if os.path.exists("logo_PR_FIXA.png"):
                 pdf.image("logo_PR_FIXA.png", x=10, y=8, w=40)
-            pdf.set_font("Arial", 'B', 14)
+            pdf.set_font("Arial", "B", 14)
             pdf.cell(0, 10, titulo, ln=True)
-            pdf.set_font("Arial", '', 12)
+            pdf.set_font("Arial", "", 12)
             if imagem == "Capa":
                 pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True)
+                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime("%d/%m/%Y")}", ln=True)
             elif imagem and os.path.exists(imagem):
                 pdf.image(imagem, x=10, y=30, w=190)
             elif titulo == "Plano de Ação":
@@ -257,6 +253,3 @@ with aba4:
         pdf.output("diagnostico_360_exportado.pdf")
         with open("diagnostico_360_exportado.pdf", "rb") as f:
             st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
-    if opcoes_exportacao == "PDF Completo":
-        for titulo, imagem in secoes:
-            pdf.add_page()
