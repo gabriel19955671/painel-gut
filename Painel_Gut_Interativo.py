@@ -21,14 +21,15 @@ if uploaded_logo:
 
 # Logomarca fixa na sidebar
 with st.sidebar:
-if os.path.exists("logo_PR_FIXA.png"):
-    from PIL import Image
-    logo_img = Image.open("logo_PR_FIXA.png")
-    st.image(logo_img, width=150)
-else:
-    st.warning("Logomarca não encontrada.")
+    if os.path.exists("logo_PR_FIXA.png"):
+        from PIL import Image
+        logo_img = Image.open("logo_PR_FIXA.png")
+        st.image(logo_img, width=150)
     else:
         st.warning("Logomarca não encontrada.")
+    from PIL import Image
+else:
+    else:
 
 # CARREGAMENTO DE DADOS
 @st.cache_data
