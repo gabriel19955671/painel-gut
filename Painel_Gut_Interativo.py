@@ -130,7 +130,7 @@ with aba1:
 with aba2:
     st.subheader("Matriz GUT - Priorização das Dores")
     try:
-        st.write(df_gut.head())
+        
         score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
         df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
         st.dataframe(df_gut_filtrado, use_container_width=True)
@@ -230,17 +230,240 @@ with aba4:
         "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"
     ])
 
-    
     if st.button("Gerar PDF"):
         with st.spinner("Gerando PDF..."):
+
+            if opcoes_exportacao in ["PDF Completo", "PDF por Área"]:
+                pdf.add_page()
+                if os.path.exists("logo PR (3) (2).png"):
+                    pdf.image("logo PR (3) (2).png", x=10, y=8, w=60)
+                if os.path.exists("cliente_logo_temp.png"):
+                    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+                pdf.set_font("Arial", 'B', 18)
+                pdf.ln(60)
+                pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+                pdf.set_font("Arial", '', 14)
+                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+if os.path.exists("cliente_logo_temp.png"):
+    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+pdf.ln(10)
+
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", 'B', 16)
-            pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
+            pdf.cell(0, 10, f"{opcoes_exportacao} - Diagnóstico 360º", ln=True, align="C")
             pdf.set_font("Arial", '', 12)
             pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
-            pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
-            pdf.ln(10)
+
+
+            
+if opcoes_exportacao == "PDF Completo":
+    fig_radar.write_image("radar_temp.png")
+    fig_gut.write_image("gut_temp.png")
+    fig_top10.write_image("top10_temp.png")
+    fig_linha.write_image("linha_temp.png")
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+    pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
+    pdf.ln(10)
+    if os.path.exists("cliente_logo_temp.png"):
+        pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+
+    pdf.add_page()
+    pdf.image("radar_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.image("gut_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(0, 10, "Plano de Ação:", ln=True)
+    for i, row in df_plano.iterrows():
+        pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
+
+    pdf.add_page()
+    pdf.cell(0, 10, "Instruções Finais:", ln=True)
+    pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
+    if os.path.exists("instrucao_img_temp.png"):
+        pdf.image("instrucao_img_temp.png", x=10, w=150)
+
+    pdf.add_page()
+    pdf.image("top10_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.image("linha_temp.png", x=10, y=40, w=190)
+elif opcoes_exportacao == "PDF por Área":
+                for area in df_radar['Área'].unique():
+                    pdf.add_page()
+                    pdf.set_font("Arial", 'B', 14)
+                    pdf.cell(0, 10, f"Área: {area}", ln=True)
+                    df_area = df_radar[df_radar['Área'] == area]
+                    media_area = df_area.groupby('Departamento')['Avaliação'].mean().reset_index()
+                    fig_area = go.Figure()
+                    for dep in media_area['Departamento'].unique():
+                        df_dep = media_area[media_area['Departamento'] == dep]
+                        fig_area.add_trace(go.Scatter(x=[area], y=df_dep['Avaliação'], mode='markers+text', name=dep,
+                                                      text=df_dep['Avaliação'].round(1).astype(str)))
+                    fig_area.update_layout(title=f"Avaliação por Departamento - {area}", xaxis_title="Área", yaxis_title="Avaliação")
+                    file_area = f"grafico_{area}.png".replace(" ", "_")
+                    fig_area.write_image(file_area, width=800, height=500)
+                    pdf.image(file_area, x=10, y=40, w=190)
+
+            elif opcoes_exportacao == "Gráfico Radar":
+
+                fig_radar.write_image("radar_temp.png", width=800, height=600)
+                pdf.image("radar_temp.png", x=10, y=40, w=190)
+            elif opcoes_exportacao == "Matriz GUT":
+                fig_gut.write_image("gut_temp.png", width=800, height=600)
+                pdf.image("gut_temp.png", x=10, y=40, w=190)
+
+                pdf.add_page()
+                pdf.set_font("Arial", 'B', 14)
+                pdf.cell(0, 10, "Tabela Radar - Filtrada", ln=True)
+                for index, row in df_plot.iterrows():
+                    linha = f"{row.get('Departamento', '')} - {row.get('Área', '')}: {row.get('Avaliação', '')}"
+                    pdf.multi_cell(0, 10, linha)
+
+                pdf.add_page()
+                pdf.set_font("Arial", 'B', 14)
+                pdf.cell(0, 10, "Matriz GUT - Filtrada", ln=True)
+                for index, row in df_gut_filtrado.iterrows():
+                    linha = f"{row.get('Problema', '')} | Score: {row.get('Score', '')}"
+                    pdf.multi_cell(0, 10, linha)
+
+            elif opcoes_exportacao == "Plano de Ação":
+pdf.ln(10)
+                for index, row in df_plano.iterrows():
+                    linha = f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}"
+                    pdf.multi_cell(0, 10, linha)
+            elif opcoes_exportacao == "Instruções Finais":
+                pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
+                if os.path.exists("instrucao_img_temp.png"):
+                    pdf.image("instrucao_img_temp.png", x=10, w=150)
+            elif opcoes_exportacao == "Gráficos Especiais":
+                fig_top10.write_image("top10_temp.png", width=800, height=500)
+                fig_linha.write_image("linha_temp.png", width=800, height=500)
+                pdf.image("top10_temp.png", x=10, y=40, w=190)
+                pdf.add_page()
+                pdf.image("linha_temp.png", x=10, y=40, w=190)
+
             pdf.output("diagnostico_360_exportado.pdf")
+
+        with open("diagnostico_360_exportado.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
+
+        with st.spinner("Gerando PDF..."):
+
+            if opcoes_exportacao in ["PDF Completo", "PDF por Área"]:
+                pdf.add_page()
+                if os.path.exists("logo PR (3) (2).png"):
+                    pdf.image("logo PR (3) (2).png", x=10, y=8, w=60)
+                if os.path.exists("cliente_logo_temp.png"):
+                    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+                pdf.set_font("Arial", 'B', 18)
+                pdf.ln(60)
+                pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+                pdf.set_font("Arial", '', 14)
+                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+if os.path.exists("cliente_logo_temp.png"):
+    pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+pdf.ln(10)
+
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, f"{opcoes_exportacao} - Diagnóstico 360º", ln=True, align="C")
+            pdf.set_font("Arial", '', 12)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+
+
+            
+if opcoes_exportacao == "PDF Completo":
+    fig_radar.write_image("radar_temp.png")
+    fig_gut.write_image("gut_temp.png")
+    fig_top10.write_image("top10_temp.png")
+    fig_linha.write_image("linha_temp.png")
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Diagnóstico 360º", ln=True, align="C")
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True)
+    pdf.cell(0, 10, f"Data: {data_diagnostico}", ln=True)
+    pdf.ln(10)
+    if os.path.exists("cliente_logo_temp.png"):
+        pdf.image("cliente_logo_temp.png", x=140, y=8, w=60)
+
+    pdf.add_page()
+    pdf.image("radar_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.image("gut_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(0, 10, "Plano de Ação:", ln=True)
+    for i, row in df_plano.iterrows():
+        pdf.multi_cell(0, 10, f"- {row.get('Ação', '')} | Resp: {row.get('Responsável', '')} | Prazo: {row.get('Prazo', '')}")
+
+    pdf.add_page()
+    pdf.cell(0, 10, "Instruções Finais:", ln=True)
+    pdf.multi_cell(0, 10, instrucoes_finais if instrucoes_finais else "Nenhuma instrução inserida.")
+    if os.path.exists("instrucao_img_temp.png"):
+        pdf.image("instrucao_img_temp.png", x=10, w=150)
+
+    pdf.add_page()
+    pdf.image("top10_temp.png", x=10, y=40, w=190)
+
+    pdf.add_page()
+    pdf.image("linha_temp.png", x=10, y=40, w=190)
+elif opcoes_exportacao == "PDF por Área":
+                for area in df_radar['Área'].unique():
+                    pdf.add_page()
+                    pdf.set_font("Arial", 'B', 14)
+                    pdf.cell(0, 10, f"Área: {area}", ln=True)
+                    df_area = df_radar[df_radar['Área'] == area]
+                    media_area = df_area.groupby('Departamento')['Avaliação'].mean().reset_index()
+                    fig_area = go.Figure()
+                    for dep in media_area['Departamento'].unique():
+                        df_dep = media_area[media_area['Departamento'] == dep]
+                        fig_area.add_trace(go.Scatter(x=[area], y=df_dep['Avaliação'], mode='markers+text', name=dep,
+                                                      text=df_dep['Avaliação'].round(1).astype(str)))
+                    fig_area.update_layout(title=f"Avaliação por Departamento - {area}", xaxis_title="Área", yaxis_title="Avaliação")
+                    file_area = f"grafico_{area}.png".replace(" ", "_")
+                    fig_area.write_image(file_area, width=800, height=500)
+                    pdf.image(file_area, x=10, y=40, w=190)
+
+            elif opcoes_exportacao == "Gráfico Radar":
+
+                fig_radar.write_image("radar_temp.png", width=800, height=600)
+                pdf.image("radar_temp.png", x=10, y=40, w=190)
+            elif opcoes_exportacao in ["Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"]:
+                fig_gut.write_image("gut_temp.png", width=800, height=600)
+                pdf.image("gut_temp.png", x=10, y=40, w=190)
+
+                pdf.add_page()
+                pdf.set_font("Arial", 'B', 14)
+                pdf.cell(0, 10, "Tabela Radar - Filtrada", ln=True)
+                for index, row in df_plot.iterrows():
+                    linha = f"{row.get('Departamento', '')} - {row.get('Área', '')}: {row.get('Avaliação', '')}"
+                    pdf.multi_cell(0, 10, linha)
+
+                pdf.add_page()
+                pdf.set_font("Arial", 'B', 14)
+                pdf.cell(0, 10, "Matriz GUT - Filtrada", ln=True)
+                for index, row in df_gut_filtrado.iterrows():
+                    linha = f"{row.get('Problema', '')} | Score: {row.get('Score', '')}"
+                    pdf.multi_cell(0, 10, linha)
+
+
+            pdf.output("diagnostico_360_exportado.pdf")
+
         with open("diagnostico_360_exportado.pdf", "rb") as f:
             st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
