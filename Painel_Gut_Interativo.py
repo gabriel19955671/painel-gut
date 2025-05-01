@@ -9,12 +9,18 @@ from PIL import Image
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
 # TOPO COM LOGOMARCA FIXA
-col_logo_esquerdo, col_restante = st.columns([1, 6])
+col_logo_esquerdo, col_logo_direito = st.columns([1, 1])
 with col_logo_esquerdo:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=240)  # AUMENTADO
+        st.image(logo_img, width=240)
     else:
+        st.warning("Logomarca não encontrada.")
+with col_logo_direito:
+    if os.path.exists("logo_cliente_temp.png"):
+        logo_cliente = Image.open("logo_cliente_temp.png")
+        st.image(logo_cliente, width=200)
+
         st.warning("Logomarca não encontrada.")
 
 # SIDEBAR
