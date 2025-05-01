@@ -13,7 +13,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col1:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
-        st.image(logo_img, width=240)
+        st.image(logo_img, width=300)
 with col2:
     if 'nome_cliente' in st.session_state and st.session_state['nome_cliente']:
         nome_cliente = st.session_state['nome_cliente']
