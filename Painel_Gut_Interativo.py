@@ -17,7 +17,6 @@ st.session_state['nome_cliente'] = nome_cliente
 uploaded_logo = st.sidebar.file_uploader("Anexar Logomarca do Cliente", type=["png", "jpg", "jpeg"])
 
 if uploaded_logo:
-    with open("cliente_logo_temp.png", "wb") as f:
         f.write(uploaded_logo.read())
 
 # Logomarca fixa na sidebar
@@ -27,14 +26,6 @@ with st.sidebar:
             st.image(img, width=150)
     else:
         st.warning("Logomarca não encontrada.")
-if os.path.exists("logo_PR_FIXA.png"):
-    with open("logo_PR_FIXA.png", "rb") as img:
-        st.image(img, width=150)
-else:
-    st.warning("Logomarca não encontrada.")
-    st.warning("Logomarca não encontrada.")
-else:
-    st.warning("Logomarca não encontrada.")
 
 # CARREGAMENTO DE DADOS
 @st.cache_data
@@ -151,8 +142,6 @@ with aba3:
                 (df_plano['Prazo'].isin(filtro_prazo)) &
                 (df_plano['Responsável'].isin(filtro_resp))
             ]
-        else:
-            st.warning("A coluna 'Responsável' não foi encontrada no Plano de Ação.")
             df_filtrado = df_plano[df_plano['Prazo'].isin(filtro_prazo)]
 
     st.dataframe(df_filtrado, use_container_width=True)
@@ -163,9 +152,7 @@ with aba5:
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
     imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
     if imagem_instrucao:
-        with open("instrucao_img_temp.png", "wb") as f:
             f.write(imagem_instrucao.read())
-        st.image("instrucao_img_temp.png", width=400)
     st.session_state['instrucoes_digitadas'] = instrucoes
 
 # ABA 6 - Gráficos Especiais
@@ -221,11 +208,7 @@ if st.button("Gerar PDF"):
             ("Top 10 Problemas", "top10_temp.png"),
             ("Evolução por Área", "linha_temp.png")
         ]
-    else:
         secoes = [(opcoes_exportacao, None)]
 
     for titulo, imagem in secoes:
         pdf.add_page()
-if os.path.exists("logo_PR_FIXA.png"):
-    with open("logo_PR_FIXA.png", "rb") as img:
-        st.image(img, width=150)
