@@ -147,14 +147,14 @@ with aba1:
     st.download_button("📥 Baixar Gráfico Radar", data=radar_buf.getvalue(), file_name="grafico_radar.png", mime="image/png")
 
     if 'reset_filtros' in st.session_state:
-        st.session_state['reset_filtros'] = False, file_name="grafico_radar.png", mime="image/png")
+        st.session_state['reset_filtros'] = False
 
 with aba2:
     st.subheader("Matriz GUT - Priorizacão das Dores")
     score_max_padrao = int(df_gut['Score'].max())
     if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
         st.session_state['score_gut_range'] = (0, score_max_padrao)
-    score_min, score_max = st.slider("Filtro por Score GUT", 0, score_max_padrao, st.session_state.get('score_gut_range', (0, score_max_padrao)), key='score_gut_range')), (0, int(df_gut['Score'].max())))
+    score_min, score_max = st.slider("Filtro por Score GUT", 0, score_max_padrao, st.session_state.get('score_gut_range', (0, score_max_padrao)), key='score_gut_range')
     df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
     st.dataframe(df_gut_filtrado, use_container_width=True)
 
