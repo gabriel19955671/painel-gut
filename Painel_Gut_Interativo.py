@@ -217,4 +217,80 @@ with aba6:
     fig_linha.write_image(linha_buf, format="png")
     st.download_button("📥 Baixar Gráfico Evolução", data=linha_buf.getvalue(), file_name="grafico_evolucao.png", mime="image/png")
 
-# A aba4 já está implementada acima
+with aba4:
+    st.subheader("📅 Exportar Diagnóstico 360º em PDF")
+    opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
+        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
+
+    if st.button("Gerar PDF"):
+        fig_top10.write_image("top10_temp.png")
+        fig_linha.write_image("linha_temp.png")
+        fig_radar.write_image("radar_temp.png")
+        fig_gut.write_image("gut_temp.png")
+
+        pdf = FPDF()
+        secoes = [("Diagnóstico 360º", "Capa")]
+
+        if opcoes_exportacao == "PDF Completo":
+            secoes += [
+                ("Gráfico Radar", "radar_temp.png"),
+                ("Matriz GUT", "gut_temp.png"),
+                ("Plano de Ação", None),
+                ("Instruções Finais", None),
+                ("Gráficos Especiais", None)
+            ]
+        else:
+            secoes = [(opcoes_exportacao, None)]
+
+        for titulo, imagem in secoes:
+            pdf.add_page()
+            if imagem == "Capa":
+                if os.path.exists("logo_PR_FIXA.png"):
+                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
+                logo_cliente_path = st.session_state.get("logo_cliente_path", "")
+                if logo_cliente_path and os.path.exists(logo_cliente_path):
+                    try:
+                        pdf.image(logo_cliente_path, x=160, y=12, w=35)
+                    except Exception as e:
+                        print(f"Erro ao inserir logo do cliente: {e}")
+                pdf.set_y(110)
+                pdf.set_font("Arial", "B", 20)
+                pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+                pdf.set_font("Arial", "", 12)
+                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+                pdf.ln(10)
+                continue
+
+            if os.path.exists("logo_PR_FIXA.png"):
+                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
+            pdf.set_font("Arial", "B", 16)
+            pdf.set_y(30)
+            pdf.ln(5)
+            pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+            pdf.set_font("Arial", "", 10)
+            pdf.cell(0, 10, f"Cliente: {nome_cliente} | Data: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+            pdf.ln(10)
+
+            if imagem and os.path.exists(imagem):
+                pdf.image(imagem, x=10, y=pdf.get_y(), w=180)
+            elif titulo == "Plano de Ação":
+                for _, row in df_plano.iterrows():
+                    pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
+            elif titulo == "Instruções Finais":
+                pdf.multi_cell(0, 10, instrucoes_finais)
+            elif titulo == "Gráficos Especiais":
+                if os.path.exists("top10_temp.png"):
+                    pdf.image("top10_temp.png", x=10, y=pdf.get_y(), w=180)
+                    pdf.ln(5)
+                if os.path.exists("linha_temp.png"):
+                    pdf.image("linha_temp.png", x=10, y=pdf.get_y(), w=180)
+                for _, row in top10.iterrows():
+                    pdf.multi_cell(0, 10, f"Problema: {row['Problema']} | Score: {row['Score']}")
+                pdf.ln(5)
+                for _, row in media_por_area.iterrows():
+                    pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
+
+        pdf.output("diagnostico_360_exportado.pdf")
+        with open("diagnostico_360_exportado.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
