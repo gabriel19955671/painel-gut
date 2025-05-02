@@ -272,12 +272,6 @@ with aba4:
             self.set_text_color(100, 100, 100)
             self.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
             self.ln(5)
-    def header(self):
-        if self.page_no() > 1:
-            self.set_font("Arial", "B", 10)
-            self.set_text_color(100, 100, 100)
-            self.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
-            self.ln(5)
 
     def footer(self):
         self.set_y(-15)
@@ -287,8 +281,7 @@ with aba4:
         self.set_y(-10)
         self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
-        
-                pdf = FooterPDF()
+        pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
         secoes = [("Diagnóstico 360º", "Capa")]
