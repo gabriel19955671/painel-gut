@@ -266,6 +266,12 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         class FooterPDF(FPDF):
+            def header(self):
+                if self.page_no() > 1:
+                    self.set_font("Arial", "B", 10)
+                    self.set_text_color(100, 100, 100)
+                    self.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+                    self.ln(5)
     def header(self):
         if self.page_no() > 1:
             self.set_font("Arial", "B", 10)
