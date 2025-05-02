@@ -125,7 +125,7 @@ with aba1:
             line=dict(color='green', width=3),
             text=df_agrupado['Avaliação'].round(1).astype(str),
             textposition="top center",
-            textfont=dict(size=18, color='black')
+            textfont=dict(size=22, color='black')
         ))
 
     fig_radar.update_layout(
