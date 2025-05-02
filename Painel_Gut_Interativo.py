@@ -149,36 +149,57 @@ with aba1:
     if 'reset_filtros' in st.session_state:
         st.session_state['reset_filtros'] = False
 
+
 with aba2:
-    st.subheader("Matriz GUT - Priorizacão das Dores")
+    st.subheader("Matriz GUT - Priorização das Dores (Treemap)")
+
     score_max_padrao = int(df_gut['Score'].max())
     if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
         st.session_state['score_gut_range'] = (0, score_max_padrao)
-    score_min, score_max = st.slider("Filtro por Score GUT", 0, score_max_padrao, st.session_state.get('score_gut_range', (0, score_max_padrao)), key='score_gut_range')
+
+    score_min, score_max = st.slider(
+        "Filtro por Score GUT", 
+        0, score_max_padrao, 
+        st.session_state.get('score_gut_range', (0, score_max_padrao)), 
+        key='score_gut_range'
+    )
+
     df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
     st.dataframe(df_gut_filtrado, use_container_width=True)
 
-    fig_gut = go.Figure(data=[go.Scatter(
-        x=df_gut_filtrado['Urgência'],
-        y=df_gut_filtrado['Gravidade'],
-        mode='markers+text',
-        text=df_gut_filtrado['Problema'],
-        textposition="top center",
-        marker=dict(size=df_gut_filtrado['Tendência']*5, color=df_gut_filtrado['Score'], colorscale='Reds', showscale=True)
-    )])
+    fig_gut = go.Figure(go.Treemap(
+        labels=df_gut_filtrado['Problema'],
+        parents=[""] * len(df_gut_filtrado),
+        values=df_gut_filtrado['Score'],
+        textinfo="label+value",
+        hovertext=df_gut_filtrado.apply(
+            lambda row: f"Gravidade: {row['Gravidade']}<br>"
+                        f"Urgência: {row['Urgência']}<br>"
+                        f"Tendência: {row['Tendência']}<br>"
+                        f"Score: {row['Score']}", 
+            axis=1
+        ),
+        hoverinfo="text",
+        marker=dict(colors=df_gut_filtrado['Score'], colorscale='Reds', showscale=True)
+    ))
 
     fig_gut.update_layout(
-        title="Visualização Matriz GUT",
-        xaxis_title="Urgência",
-        yaxis_title="Gravidade",
-        margin=dict(l=40, r=40, t=60, b=40),
-        height=500
+        title="Treemap - Priorização GUT",
+        margin=dict(l=10, r=10, t=50, b=10),
+        height=600
     )
+
     st.plotly_chart(fig_gut, use_container_width=True)
 
     gut_buf = BytesIO()
     fig_gut.write_image(gut_buf, format="png")
-    st.download_button("📥 Baixar Matriz GUT", data=gut_buf.getvalue(), file_name="matriz_gut.png", mime="image/png")
+    st.download_button(
+        "📥 Baixar Treemap GUT", 
+        data=gut_buf.getvalue(), 
+        file_name="treemap_gut.png", 
+        mime="image/png"
+    )
+
 
 with aba3:
     st.subheader("Plano de Ação - Estratégias de Melhoria")
