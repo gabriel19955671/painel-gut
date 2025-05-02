@@ -20,7 +20,8 @@ if uploaded_logo:
         image = Image.open(uploaded_logo)
         if image.mode in ("RGBA", "P"):
             image = image.convert("RGB")  # Remove transparência se houver
-        image.save("logo_cliente_temp.png", format="PNG", optimize=True)
+        image.save("logo_cliente_temp.jpg", format="JPEG", quality=95)
+        st.session_state['logo_cliente_path'] = "logo_cliente_temp.jpg"
     except Exception as e:
         st.error(f"Erro ao processar a imagem: {e}")
 
@@ -236,7 +237,7 @@ with aba4:
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
                 if os.path.exists("logo_cliente_temp.png"):
-                    pdf.image("logo_cliente_temp.png", x=160, y=12, w=35)
+                    pdf.image("logo_cliente_temp.jpg", x=160, y=12, w=35)
                 pdf.set_y(110)
                 pdf.set_font("Arial", "B", 20)
                 pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
