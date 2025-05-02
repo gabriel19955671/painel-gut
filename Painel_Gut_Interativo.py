@@ -259,10 +259,10 @@ with aba4:
         "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
 
     if st.button("Gerar PDF"):
-        fig_top10.write_image("top10_temp.png")
-        fig_linha.write_image("linha_temp.png")
-        fig_radar.write_image("radar_temp.png")
-        fig_gut.write_image("gut_temp.png")
+        fig_top10.write_image("top10_temp.png", width=600, height=400)
+        fig_linha.write_image("linha_temp.png", width=600, height=400)
+        fig_radar.write_image("radar_temp.png", width=600, height=400)
+        fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         pdf = FPDF()
         secoes = [("Diagnóstico 360º", "Capa")]
@@ -318,13 +318,19 @@ with aba4:
                     for _, row in df_gut_filtrado.iterrows():
                         pdf.multi_cell(0, 8, f"Problema: {row['Problema']} | Gravidade: {row['Gravidade']} | Urgência: {row['Urgência']} | Tendência: {row['Tendência']} | Score: {row['Score']}")
                     pdf.ln(2)
+                pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, f"🔍 {titulo}", ln=True, align="C")
+                pdf.ln(2)
                 pdf.image(imagem, x=40, y=pdf.get_y(), w=120)
             elif titulo == "Plano de Ação":
                 for _, row in df_filtrado.iterrows():
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
             elif titulo == "Instruções Finais":
                 if os.path.exists("img_instrucao_temp.png"):
-                    pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "🧾 Imagem de Instrução", ln=True, align="C")
+                pdf.ln(2)
+                pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
                     pdf.ln(5)
                 pdf.multi_cell(0, 10, instrucoes_finais)
             elif titulo == "Gráficos Especiais":
@@ -335,10 +341,16 @@ with aba4:
                     pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
                 pdf.ln(5)
                 if os.path.exists("top10_temp.png"):
-                    pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "📊 Gráfico Top 10 GUT", ln=True, align="C")
+                pdf.ln(2)
+                pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
                     pdf.ln(5)
                 if os.path.exists("linha_temp.png"):
-                    pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.set_font("Arial", "B", 12)
+                pdf.cell(0, 10, "📈 Gráfico de Evolução", ln=True, align="C")
+                pdf.ln(2)
+                pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
                 for _, row in top10.iterrows():
                     pdf.multi_cell(0, 10, f"Problema: {row['Problema']} | Score: {row['Score']}")
                 pdf.ln(5)
