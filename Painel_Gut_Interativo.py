@@ -265,7 +265,9 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         pdf = FPDF()
-        secoes = [("Diagnóstico 360º", "Capa")]
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.alias_nb_pages()
+        secoes = [("Sumário", None), ("Diagnóstico 360º", "Capa")]
 
         if opcoes_exportacao == "PDF Completo":
             secoes += [
@@ -280,6 +282,14 @@ with aba4:
 
         for titulo, imagem in secoes:
             pdf.add_page()
+            if titulo == "Sumário":
+                pdf.set_font("Arial", "B", 16)
+                pdf.cell(0, 10, "Sumário", ln=True, align="C")
+                pdf.ln(10)
+                for secao, _ in secoes[2:]:
+                    pdf.set_font("Arial", "", 12)
+                    pdf.cell(0, 10, f"- {secao}", ln=True)
+                continue
             if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
@@ -328,18 +338,14 @@ with aba4:
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
             elif titulo == "Instruções Finais":
                 if os.path.exists("img_instrucao_temp.png"):
-                    pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "Imagem de Instrução", ln=True, align="C")
-                    pdf.ln(2)
                     pdf.ln(10)
-                    pdf.image("img_instrucao_temp.png", x=60, y=pdf.get_y(), w=90)
+                    pdf.image("img_instrucao_temp.png", x=60, y=pdf.get_y(), w=70)
                     pdf.ln(5)
-                pdf.multi_cell(0, 10, instrucoes_finais)
+                pdf.set_font("Arial", "", 10)
+                pdf.multi_cell(0, 8, instrucoes_finais)
             elif titulo == "Gráficos Especiais":
                 for _, row in top10.iterrows():
                     pdf.multi_cell(0, 10, f"Top10 - Problema: {row['Problema']} | Score: {row['Score']}")
-                pdf.ln(5)
-                
                 pdf.ln(5)
                 if os.path.exists("top10_temp.png"):
                     pdf.set_font("Arial", "B", 12)
