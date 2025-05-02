@@ -183,7 +183,7 @@ with aba2:
         hoverinfo="text",
         marker=dict(
             colors=df_gut_filtrado['Score'],
-            colorscale=[[0.0, 'green'], [0.0, 'yellow'], [1.0, 'red']],
+            colorscale=[[1.0, 'green'], [0.0, 'yellow'], [1.0, 'red']],
             cmin=score_min,
             cmax=score_max,
             showscale=True
