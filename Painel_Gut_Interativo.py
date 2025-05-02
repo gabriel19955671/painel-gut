@@ -328,9 +328,9 @@ with aba4:
             elif titulo == "Instruções Finais":
                 if os.path.exists("img_instrucao_temp.png"):
                     pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, "🧾 Imagem de Instrução", ln=True, align="C")
-                pdf.ln(2)
-                pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.cell(0, 10, "🧾 Imagem de Instrução", ln=True, align="C")
+                    pdf.ln(2)
+                    pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
                     pdf.ln(5)
                 pdf.multi_cell(0, 10, instrucoes_finais)
             elif titulo == "Gráficos Especiais":
