@@ -217,6 +217,10 @@ with aba5:
 with aba6:
     st.subheader("✨ Gráficos Especiais")
 
+    if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+        top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
+        media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
+
     st.markdown("#### 🔝 Top 10 Problemas por Score GUT")
     fig_top10 = go.Figure(go.Bar(
         x=top10['Score'],
@@ -232,7 +236,6 @@ with aba6:
     st.download_button("📥 Baixar Gráfico Top 10 GUT", data=top10_buf.getvalue(), file_name="top10_gut.png", mime="image/png")
 
     st.markdown("#### 📈 Evolução Média das Avaliações por Área")
-    fig_linha = go.Figure()
     for dep in media_por_area['Departamento'].unique():
         df_dep = media_por_area[media_por_area['Departamento'] == dep]
         fig_linha.add_trace(go.Scatter(
