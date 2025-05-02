@@ -217,6 +217,8 @@ with aba5:
 with aba6:
     st.subheader("✨ Gráficos Especiais")
 
+    fig_linha = go.Figure()
+
     if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
         top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
         media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
