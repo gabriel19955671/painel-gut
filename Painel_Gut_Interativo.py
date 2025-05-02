@@ -266,31 +266,16 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         class FooterPDF(FPDF):
-    def header(self):
-        if self.page_no() > 1:
-            self.set_font("Arial", "B", 10)
-            self.set_text_color(100, 100, 100)
-            self.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
-            self.ln(5)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.set_text_color(180, 180, 180)
-        self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
-        self.set_y(-10)
-        self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
+            def footer(self):
+                self.set_y(-15)
+                self.set_font("Arial", "I", 8)
+                self.set_text_color(180, 180, 180)
+                self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
+                self.set_y(-10)
+                self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
         
-pdf = FooterPDF()
-pdf.set_auto_page_break(auto=True, margin=15)
-pdf.alias_nb_pages()
-pdf.set_auto_page_break(auto=True, margin=15)
-pdf.alias_nb_pages()
-        pdf.set_auto_page_break(auto=True, margin=15)
-        pdf.alias_nb_pages()
-pdf.set_auto_page_break(auto=True, margin=15)
-pdf.alias_nb_pages()
+        pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
         secoes = [("Diagnóstico 360º", "Capa")]
@@ -301,7 +286,7 @@ pdf.alias_nb_pages()
                 ("Matriz GUT", "gut_temp.png"),
                 ("Plano de Ação", None),
                 ("Instruções Finais", None),
-                
+                ("Gráficos Especiais", None)
             ]
         else:
             secoes = [(opcoes_exportacao, None)]
@@ -361,6 +346,26 @@ pdf.alias_nb_pages()
                     pdf.ln(5)
                 pdf.set_font("Arial", "", 10)
                 pdf.multi_cell(0, 8, instrucoes_finais)
+            elif titulo == "Gráficos Especiais":
+                for _, row in top10.iterrows():
+                    pdf.multi_cell(0, 10, f"Top10 - Problema: {row['Problema']} | Score: {row['Score']}")
+                pdf.ln(5)
+                if os.path.exists("top10_temp.png"):
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "Gráfico Top 10 GUT", ln=True, align="C")
+                    pdf.ln(2)
+                    pdf.ln(10)
+                    pdf.image("top10_temp.png", x=60, y=pdf.get_y(), w=90)
+                    pdf.ln(5)
+                if os.path.exists("linha_temp.png"):
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "Gráfico de Evolução", ln=True, align="C")
+                    pdf.ln(2)
+                    pdf.ln(10)
+                    pdf.image("linha_temp.png", x=60, y=pdf.get_y(), w=90)
+                
+                for _, row in media_por_area.iterrows():
+                    pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
 
         pdf.output("diagnostico_360_exportado.pdf")
         with open("diagnostico_360_exportado.pdf", "rb") as f:
