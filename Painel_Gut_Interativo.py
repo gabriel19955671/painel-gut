@@ -9,6 +9,10 @@ from PIL import Image
 st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", layout="wide")
 
 # SIDEBAR (deve vir antes do cabeçalho)
+st.sidebar.markdown("---")
+if st.sidebar.button("🔁 Resetar Filtros e Abas"):
+    st.session_state.clear()
+    st.experimental_rerun()
 data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
 st.session_state['data_diagnostico'] = data_diagnostico
 nome_cliente = st.sidebar.text_input("Nome do Cliente")
