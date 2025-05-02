@@ -281,10 +281,9 @@ with aba4:
         self.set_y(-10)
         self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
-        
-pdf = FooterPDF()
-pdf.set_auto_page_break(auto=True, margin=15)
-pdf.alias_nb_pages()
+        pdf = FooterPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.alias_nb_pages()
 pdf.set_auto_page_break(auto=True, margin=15)
 pdf.alias_nb_pages()
         pdf.set_auto_page_break(auto=True, margin=15)
