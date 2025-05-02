@@ -123,6 +123,10 @@ with aba1:
     st.subheader("Tabela de Pontuações Filtradas")
     st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
+    radar_buf = BytesIO()
+    fig_radar.write_image(radar_buf, format="png")
+    st.download_button("📥 Baixar Gráfico Radar", data=radar_buf.getvalue(), file_name="grafico_radar.png", mime="image/png")
+
 with aba2:
     st.subheader("Matriz GUT - Priorizacão das Dores")
     score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
@@ -147,6 +151,10 @@ with aba2:
     )
     st.plotly_chart(fig_gut, use_container_width=True)
 
+    gut_buf = BytesIO()
+    fig_gut.write_image(gut_buf, format="png")
+    st.download_button("📥 Baixar Matriz GUT", data=gut_buf.getvalue(), file_name="matriz_gut.png", mime="image/png")
+
 with aba3:
     st.subheader("Plano de Ação - Estratégias de Melhoria")
     col1, col2 = st.columns(2)
@@ -162,6 +170,9 @@ with aba3:
                 (df_plano['Responsável'].isin(filtro_resp))
             ]
     st.dataframe(df_filtrado, use_container_width=True)
+
+    plano_csv = df_filtrado.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Baixar Plano de Ação Filtrado", data=plano_csv, file_name="plano_acao_filtrado.csv", mime="text/csv")
 
 with aba5:
     st.subheader("🧾 Instruções Pós-Diagnóstico")
@@ -185,6 +196,10 @@ with aba6:
     fig_top10.update_layout(height=500, margin=dict(l=120, r=20, t=40, b=40))
     st.plotly_chart(fig_top10, use_container_width=True)
 
+    top10_buf = BytesIO()
+    fig_top10.write_image(top10_buf, format="png")
+    st.download_button("📥 Baixar Gráfico Top 10 GUT", data=top10_buf.getvalue(), file_name="top10_gut.png", mime="image/png")
+
     st.markdown("#### 📈 Evolução Média das Avaliações por Área")
     fig_linha = go.Figure()
     for dep in media_por_area['Departamento'].unique():
@@ -197,5 +212,9 @@ with aba6:
         ))
     fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
     st.plotly_chart(fig_linha, use_container_width=True)
+
+    linha_buf = BytesIO()
+    fig_linha.write_image(linha_buf, format="png")
+    st.download_button("📥 Baixar Gráfico Evolução", data=linha_buf.getvalue(), file_name="grafico_evolucao.png", mime="image/png")
 
 # A aba4 já está implementada acima
