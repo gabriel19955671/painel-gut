@@ -265,7 +265,7 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         class FooterPDF(FPDF):
-        def footer(self):
+            def footer(self):
         self.set_y(-15)
         self.set_font("Arial", "I", 8)
         self.set_text_color(180, 180, 180)
