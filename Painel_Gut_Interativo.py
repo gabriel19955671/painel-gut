@@ -16,8 +16,10 @@ st.session_state['nome_cliente'] = nome_cliente
 uploaded_logo = st.sidebar.file_uploader("Anexar Logomarca do Cliente", type=["png", "jpg", "jpeg"])
 
 if uploaded_logo:
-    with open("logo_cliente_temp.png", "wb") as f:
-        f.write(uploaded_logo.read())
+    image = Image.open(uploaded_logo)
+    if image.mode != "RGB":
+        image = image.convert("RGB")  # Garante compatibilidade com JPEG/PNG
+    image.save("logo_cliente_temp.png", format="PNG")  # Sempre salva como PNG válido
 
 # TOPO COM LOGOMARCA FIXA (agora já pode acessar os valores com segurança)
 col1, col2, col3 = st.columns([1, 2, 1])
