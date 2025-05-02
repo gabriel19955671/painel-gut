@@ -12,7 +12,8 @@ st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", la
 st.sidebar.markdown("---")
 if st.sidebar.button("🔁 Resetar Filtros e Abas"):
     st.session_state.clear()
-    st.success("Todos os filtros, dados e abas foram resetados com sucesso. Recarregue a página se necessário.")
+    st.session_state['reset_filtros'] = True
+    st.success("Todos os filtros, dados e abas foram resetados com sucesso.")
 data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
 st.session_state['data_diagnostico'] = data_diagnostico
 nome_cliente = st.sidebar.text_input("Nome do Cliente")
@@ -89,12 +90,19 @@ with aba1:
     col1, col2, col3 = st.columns([3, 3, 4])
     with col1:
         departamentos = sorted(df_radar['Departamento'].unique())
-        depto_selecionado = st.multiselect("Departamento(s)", departamentos, default=departamentos)
+        if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+            st.session_state['depto_selecionado'] = departamentos
+        depto_selecionado = st.multiselect("Departamento(s)", departamentos, default=st.session_state.get('depto_selecionado', departamentos), key='depto_selecionado')
     with col2:
         areas = sorted(df_radar['Área'].unique())
-        area_selecionada = st.multiselect("Área(s)", areas, default=areas)
+        if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+            st.session_state['area_selecionada'] = areas
+        area_selecionada = st.multiselect("Área(s)", areas, default=st.session_state.get('area_selecionada', areas), key='area_selecionada')
     with col3:
-        avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, (0.0, 10.0), step=0.1)
+        avaliacao_default = (0.0, 10.0)
+        if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+            st.session_state['avaliacao_range'] = avaliacao_default
+        avaliacao_min, avaliacao_max = st.slider("Intervalo de Avaliação", 0.0, 10.0, st.session_state.get('avaliacao_range', avaliacao_default), step=0.1, key='avaliacao_range')
 
     df_plot = df_radar[
         (df_radar['Departamento'].isin(depto_selecionado)) &
@@ -138,9 +146,15 @@ with aba1:
     fig_radar.write_image(radar_buf, format="png")
     st.download_button("📥 Baixar Gráfico Radar", data=radar_buf.getvalue(), file_name="grafico_radar.png", mime="image/png")
 
+    if 'reset_filtros' in st.session_state:
+        st.session_state['reset_filtros'] = False, file_name="grafico_radar.png", mime="image/png")
+
 with aba2:
     st.subheader("Matriz GUT - Priorizacão das Dores")
-    score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
+    score_max_padrao = int(df_gut['Score'].max())
+    if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+        st.session_state['score_gut_range'] = (0, score_max_padrao)
+    score_min, score_max = st.slider("Filtro por Score GUT", 0, score_max_padrao, st.session_state.get('score_gut_range', (0, score_max_padrao)), key='score_gut_range')), (0, int(df_gut['Score'].max())))
     df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
     st.dataframe(df_gut_filtrado, use_container_width=True)
 
@@ -168,14 +182,18 @@ with aba2:
 
 with aba3:
     st.subheader("Plano de Ação - Estratégias de Melhoria")
+    if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+        st.session_state['filtro_prazo'] = list(df_plano['Prazo'].unique())
+        if 'Responsável' in df_plano.columns:
+            st.session_state['filtro_resp'] = list(df_plano['Responsável'].dropna().unique())
     col1, col2 = st.columns(2)
     with col1:
         prazos = df_plano['Prazo'].unique()
-        filtro_prazo = st.multiselect("Filtrar por Prazo", options=prazos, default=prazos)
+        filtro_prazo = st.multiselect("Filtrar por Prazo", options=prazos, default=st.session_state.get('filtro_prazo', list(prazos)), key='filtro_prazo')
     with col2:
         if 'Responsável' in df_plano.columns:
             responsaveis = df_plano['Responsável'].dropna().unique()
-            filtro_resp = st.multiselect("Filtrar por Responsável", options=responsaveis, default=responsaveis)
+            filtro_resp = st.multiselect("Filtrar por Responsável", options=responsaveis, default=st.session_state.get('filtro_resp', list(responsaveis)), key='filtro_resp')
             df_filtrado = df_plano[
                 (df_plano['Prazo'].isin(filtro_prazo)) &
                 (df_plano['Responsável'].isin(filtro_resp))
@@ -187,6 +205,8 @@ with aba3:
 
 with aba5:
     st.subheader("🧾 Instruções Pós-Diagnóstico")
+    if 'reset_filtros' in st.session_state and st.session_state['reset_filtros']:
+        st.session_state['instrucoes_digitadas'] = ""
     instrucoes = st.text_area("Digite aqui as instruções finais para o cliente:", height=300)
     imagem_instrucao = st.file_uploader("Opcional: Anexar imagem para as instruções", type=["png", "jpg", "jpeg"])
     if imagem_instrucao:
