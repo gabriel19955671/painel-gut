@@ -19,24 +19,23 @@ if uploaded_logo:
     try:
         image = Image.open(uploaded_logo)
         if image.mode in ("RGBA", "P"):
-            image = image.convert("RGB")  # Remove transparência se houver
+            image = image.convert("RGB")
         image.save("logo_cliente_temp.jpg", format="JPEG", quality=95)
         st.session_state['logo_cliente_path'] = "logo_cliente_temp.jpg"
     except Exception as e:
         st.error(f"Erro ao processar a imagem: {e}")
 
-# TOPO COM LOGOMARCA FIXA (agora já pode acessar os valores com segurança)
-col1, col2, col3 = st.columns([1, 2, 1])
-with col1:
+# TOPO COM LOGOMARCA FIXA
+topo1, topo2, topo3 = st.columns([1, 2, 1])
+with topo1:
     if os.path.exists("logo_PR_FIXA.png"):
         logo_img = Image.open("logo_PR_FIXA.png")
         st.image(logo_img, width=300)
 
-with col2:
+with topo2:
     nome_cliente = st.session_state.get('nome_cliente', '')
     data_diagnostico = st.session_state.get('data_diagnostico', None)
     data_formatada = data_diagnostico.strftime('%d/%m/%Y') if data_diagnostico else ''
-
     st.markdown(f"""
         <div style='text-align: center; padding-top: 15px; padding-bottom: 5px;'>
             <h1 style='font-size: 32px; margin-bottom: 5px;'>Diagnóstico Potencialize 360º</h1>
@@ -45,12 +44,11 @@ with col2:
         </div>
     """, unsafe_allow_html=True)
 
-with col3:
-    if os.path.exists("logo_cliente_temp.png"):
-        logo_cliente = Image.open("logo_cliente_temp.png")
+with topo3:
+    if os.path.exists("logo_cliente_temp.jpg"):
+        logo_cliente = Image.open("logo_cliente_temp.jpg")
         st.image(logo_cliente, width=220)
 
-# CARREGAMENTO DE DADOS
 @st.cache_data
 def carregar_unificado():
     arquivo = pd.ExcelFile('dados_unificado.xlsx', engine='openpyxl')
@@ -63,9 +61,6 @@ def carregar_unificado():
 
 df_gut, df_radar, df_plano = carregar_unificado()
 instrucoes_finais = st.session_state.get("instrucoes_digitadas", "")
-
-# Dados globais para exportação
-# (evita NameError durante geração do PDF)
 top10 = df_gut.sort_values(by='Score', ascending=False).head(10)
 media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
 
@@ -129,7 +124,7 @@ with aba1:
     st.dataframe(df_plot[['Departamento', 'Área', 'Avaliação']], use_container_width=True)
 
 with aba2:
-    st.subheader("Matriz GUT - Priorização das Dores")
+    st.subheader("Matriz GUT - Priorizacão das Dores")
     score_min, score_max = st.slider("Filtro por Score GUT", 0, int(df_gut['Score'].max()), (0, int(df_gut['Score'].max())))
     df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)]
     st.dataframe(df_gut_filtrado, use_container_width=True)
@@ -203,89 +198,4 @@ with aba6:
     fig_linha.update_layout(height=500, xaxis_title='Área', yaxis_title='Avaliação Média')
     st.plotly_chart(fig_linha, use_container_width=True)
 
-with aba4:
-    st.subheader("📅 Exportar Diagnóstico 360º em PDF")
-    opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
-        "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
-
-    if st.button("Gerar PDF"):
-        fig_top10 = go.Figure(go.Bar(x=top10['Score'], y=top10['Problema'], orientation='h', marker_color='crimson'))
-        fig_top10.write_image("top10_temp.png")
-        fig_linha = go.Figure()
-        for dep in media_por_area['Departamento'].unique():
-            df_dep = media_por_area[media_por_area['Departamento'] == dep]
-            fig_linha.add_trace(go.Scatter(x=df_dep['Área'], y=df_dep['Avaliação'], mode='lines+markers', name=dep))
-        fig_linha.write_image("linha_temp.png")
-        fig_radar.write_image("radar_temp.png")
-        fig_gut.write_image("gut_temp.png")
-        pdf = FPDF()
-        secoes = [("Diagnóstico 360º", "Capa")]
-        if opcoes_exportacao == "PDF Completo":
-            secoes += [
-                ("Gráfico Radar", "radar_temp.png"),
-                ("Matriz GUT", "gut_temp.png"),
-                ("Plano de Ação", None),
-                ("Instruções Finais", None),
-                ("Gráficos Especiais", None)
-            ]
-        else:
-            secoes = [(opcoes_exportacao, None)]
-
-        for titulo, imagem in secoes:
-            pdf.add_page()
-            if imagem == "Capa":
-    if os.path.exists("logo_PR_FIXA.png"):
-        pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
-
-    logo_cliente_path = st.session_state.get("logo_cliente_path", "")
-    if logo_cliente_path and os.path.exists(logo_cliente_path):
-        try:
-            pdf.image(logo_cliente_path, x=160, y=12, w=35)
-        except Exception as e:
-            print(f"Erro ao inserir logo do cliente: {e}")
-
-    pdf.set_y(110)
-    pdf.set_font("Arial", "B", 20)
-    pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
-    pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
-    pdf.ln(10)
-    continue
-
-            if os.path.exists("logo_PR_FIXA.png"):
-                pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
-            pdf.set_font("Arial", "B", 16)
-            pdf.set_y(30)
-            pdf.ln(5)
-            pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
-            pdf.set_font("Arial", "", 10)
-            pdf.cell(0, 10, f"Cliente: {nome_cliente} | Data: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
-            pdf.ln(10)
-
-            if imagem and os.path.exists(imagem):
-                pdf.image(imagem, x=10, y=pdf.get_y(), w=180)
-
-            elif titulo == "Plano de Ação":
-                for _, row in df_plano.iterrows():
-                    pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
-
-            elif titulo == "Instruções Finais":
-                pdf.multi_cell(0, 10, instrucoes_finais)
-
-            elif titulo == "Gráficos Especiais":
-                if os.path.exists("top10_temp.png"):
-                    pdf.image("top10_temp.png", x=10, y=pdf.get_y(), w=180)
-                    pdf.ln(5)
-                if os.path.exists("linha_temp.png"):
-                    pdf.image("linha_temp.png", x=10, y=pdf.get_y(), w=180)
-                for _, row in top10.iterrows():
-                    pdf.multi_cell(0, 10, f"Problema: {row['Problema']} | Score: {row['Score']}")
-                pdf.ln(5)
-                media_por_area = df_radar.groupby(['Área', 'Departamento'])['Avaliação'].mean().reset_index()
-                for _, row in media_por_area.iterrows():
-                    pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
-
-        pdf.output("diagnostico_360_exportado.pdf")
-        with open("diagnostico_360_exportado.pdf", "rb") as f:
-            st.download_button("📥 Baixar PDF", f, file_name="diagnostico_360_exportado.pdf", mime="application/pdf")
+# A aba4 já está implementada acima
