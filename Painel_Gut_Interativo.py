@@ -234,18 +234,24 @@ with aba4:
         for titulo, imagem in secoes:
             pdf.add_page()
             if imagem == "Capa":
-                if os.path.exists("logo_PR_FIXA.png"):
-                    pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
-                if os.path.exists("logo_cliente_temp.png"):
-                    pdf.image("logo_cliente_temp.jpg", x=160, y=12, w=35)
-                pdf.set_y(110)
-                pdf.set_font("Arial", "B", 20)
-                pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
-                pdf.set_font("Arial", "", 12)
-                pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
-                pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
-                pdf.ln(10)
-                continue
+    if os.path.exists("logo_PR_FIXA.png"):
+        pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
+
+    logo_cliente_path = st.session_state.get("logo_cliente_path", "")
+    if logo_cliente_path and os.path.exists(logo_cliente_path):
+        try:
+            pdf.image(logo_cliente_path, x=160, y=12, w=35)
+        except Exception as e:
+            print(f"Erro ao inserir logo do cliente: {e}")
+
+    pdf.set_y(110)
+    pdf.set_font("Arial", "B", 20)
+    pdf.cell(0, 10, "Diagnóstico 360º - Potencialize Resultados", ln=True, align="C")
+    pdf.set_font("Arial", "", 12)
+    pdf.cell(0, 10, f"Cliente: {nome_cliente}", ln=True, align="C")
+    pdf.cell(0, 10, f"Data do Diagnóstico: {data_diagnostico.strftime('%d/%m/%Y')}", ln=True, align="C")
+    pdf.ln(10)
+    continue
 
             if os.path.exists("logo_PR_FIXA.png"):
                 pdf.image("logo_PR_FIXA.png", x=10, y=8, w=50)
