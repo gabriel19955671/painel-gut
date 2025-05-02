@@ -125,12 +125,12 @@ with aba1:
             line=dict(color='darkgreen', width=3),
             text=df_agrupado['Avaliação'].round(1).astype(str),
             textposition="top center",
-            textfont=dict(size=22, color='white')
+            textfont=dict(size=24, color='white')
         ))
 
     fig_radar.update_layout(
         polar=dict(
-            bgcolor="darkred",
+            bgcolor="red",
             radialaxis=dict(visible=True, range=[0,10]),
             angularaxis=dict(tickfont=dict(size=14))
         ),
