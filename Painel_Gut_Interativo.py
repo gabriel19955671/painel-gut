@@ -121,8 +121,8 @@ with aba1:
             theta=df_full['Área'],
             mode='lines+markers+text',
             fill='toself',
-            marker=dict(size=8, color='green'),
-            line=dict(color='green', width=3),
+            marker=dict(size=8, color='darkgreen'),
+            line=dict(color='darkgreen', width=3),
             text=df_agrupado['Avaliação'].round(1).astype(str),
             textposition="top center",
             textfont=dict(size=22, color='black')
