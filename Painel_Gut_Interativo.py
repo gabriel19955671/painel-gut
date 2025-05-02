@@ -319,7 +319,7 @@ with aba4:
                         pdf.multi_cell(0, 8, f"Problema: {row['Problema']} | Gravidade: {row['Gravidade']} | Urgência: {row['Urgência']} | Tendência: {row['Tendência']} | Score: {row['Score']}")
                     pdf.ln(2)
                 pdf.set_font("Arial", "B", 12)
-                pdf.cell(0, 10, f"🔍 {titulo}", ln=True, align="C")
+                pdf.cell(0, 10, f"{titulo}", ln=True, align="C")
                 pdf.ln(2)
                 pdf.image(imagem, x=40, y=pdf.get_y(), w=120)
             elif titulo == "Plano de Ação":
@@ -328,7 +328,7 @@ with aba4:
             elif titulo == "Instruções Finais":
                 if os.path.exists("img_instrucao_temp.png"):
                     pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "🧾 Imagem de Instrução", ln=True, align="C")
+                    pdf.cell(0, 10, "Imagem de Instrução", ln=True, align="C")
                     pdf.ln(2)
                     pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
                     pdf.ln(5)
@@ -341,13 +341,13 @@ with aba4:
                 pdf.ln(5)
                 if os.path.exists("top10_temp.png"):
                     pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "📊 Gráfico Top 10 GUT", ln=True, align="C")
+                    pdf.cell(0, 10, "Gráfico Top 10 GUT", ln=True, align="C")
                     pdf.ln(2)
                     pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
                     pdf.ln(5)
                 if os.path.exists("linha_temp.png"):
                     pdf.set_font("Arial", "B", 12)
-                    pdf.cell(0, 10, "📈 Gráfico de Evolução", ln=True, align="C")
+                    pdf.cell(0, 10, "Gráfico de Evolução", ln=True, align="C")
                     pdf.ln(2)
                     pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
                 
