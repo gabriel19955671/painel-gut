@@ -346,10 +346,6 @@ with aba4:
                     pdf.ln(5)
                 pdf.set_font("Arial", "", 10)
                 pdf.multi_cell(0, 8, instrucoes_finais)
-                            pdf.ln(10)
-                pdf.ln(10)
-                for _, row in media_por_area.iterrows():
-                    pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
 
         pdf.output("diagnostico_360_exportado.pdf")
         with open("diagnostico_360_exportado.pdf", "rb") as f:
