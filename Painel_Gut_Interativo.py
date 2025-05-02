@@ -347,6 +347,8 @@ with aba4:
                 pdf.set_font("Arial", "", 10)
                 pdf.multi_cell(0, 8, instrucoes_finais)
             elif titulo == "Gráficos Especiais":
+                pdf.set_font("Arial", "", 10)
+                
                 if os.path.exists("top10_temp.png"):
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Gráfico Top 10 GUT", ln=True, align="C")
@@ -362,6 +364,8 @@ with aba4:
                     pdf.ln(2)
                     pdf.image("linha_temp.png", x=60, y=pdf.get_y(), w=90)
                     pdf.ln(10)
+                pdf.ln(10)
+                pdf.ln(10)
                 for _, row in media_por_area.iterrows():
                     pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
 
