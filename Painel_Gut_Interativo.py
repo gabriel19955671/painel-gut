@@ -11,6 +11,9 @@ st.set_page_config(page_title="Diagnóstico 360º - Potencialize Resultados", la
 # SIDEBAR (deve vir antes do cabeçalho)
 st.sidebar.markdown("---")
 if st.sidebar.button("🔁 Resetar Filtros e Abas"):
+    st.session_state['reset'] = True
+
+if st.session_state.get('reset', False):
     st.session_state.clear()
     st.experimental_rerun()
 data_diagnostico = st.sidebar.date_input("Data de Apresentação do Diagnóstico")
