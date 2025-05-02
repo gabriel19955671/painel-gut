@@ -258,6 +258,7 @@ with aba4:
     opcoes_exportacao = st.selectbox("Escolha o conteúdo para exportar:", [
         "PDF Completo", "Gráfico Radar", "Matriz GUT", "Plano de Ação", "Instruções Finais", "Gráficos Especiais"])
 
+    # ========== GERAÇÃO DO PDF COM LOGO, GRÁFICOS E TABELAS ==========
     if st.button("Gerar PDF"):
         fig_top10.write_image("top10_temp.png", width=600, height=400)
         fig_linha.write_image("linha_temp.png", width=600, height=400)
@@ -277,10 +278,6 @@ with aba4:
         pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
-
-
-        pdf.set_auto_page_break(auto=True, margin=15)
-        pdf.alias_nb_pages()
         secoes = [("Diagnóstico 360º", "Capa")]
 
         if opcoes_exportacao == "PDF Completo":
@@ -296,7 +293,7 @@ with aba4:
 
         for titulo, imagem in secoes:
             pdf.add_page()
-                        if imagem == "Capa":
+            if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
                 logo_cliente_path = st.session_state.get("logo_cliente_path", "")
