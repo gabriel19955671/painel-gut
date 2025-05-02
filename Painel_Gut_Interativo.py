@@ -149,8 +149,6 @@ with aba1:
     if 'reset_filtros' in st.session_state:
         st.session_state['reset_filtros'] = False
 
-
-
 with aba2:
     st.subheader("Matriz GUT - Priorização das Dores (Treemap)")
 
@@ -173,7 +171,7 @@ with aba2:
         parents=[""] * len(df_gut_filtrado),
         values=df_gut_filtrado['Score'],
         textinfo="label+value",
-        textfont=dict(size=20),
+        textfont=dict(size=18),
         hovertext=df_gut_filtrado.apply(
             lambda row: f"Gravidade: {row['Gravidade']}<br>"
                         f"Urgência: {row['Urgência']}<br>"
@@ -184,7 +182,7 @@ with aba2:
         hoverinfo="text",
         marker=dict(
             colors=df_gut_filtrado['Score'],
-            colorscale=[[0, 'green'], [0.5, 'orange'], [1, 'red']],
+            colorscale=[[0.0, 'green'], [0.5, 'orange'], [1.0, 'red']],
             cmin=score_min,
             cmax=score_max,
             showscale=True
@@ -207,7 +205,6 @@ with aba2:
         file_name="treemap_gut.png", 
         mime="image/png"
     )
-
 
 with aba3:
     st.subheader("Plano de Ação - Estratégias de Melhoria")
