@@ -172,7 +172,7 @@ with aba2:
         parents=[""] * len(df_gut_filtrado),
         values=df_gut_filtrado['Score'],
         textinfo="label+value",
-        textfont=dict(size=72),
+        textfont=dict(size=54),
         hovertext=df_gut_filtrado.apply(
             lambda row: f"Gravidade: {row['Gravidade']}<br>"
                         f"Urgência: {row['Urgência']}<br>"
