@@ -340,16 +340,16 @@ with aba4:
                 
                 pdf.ln(5)
                 if os.path.exists("top10_temp.png"):
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "📊 Gráfico Top 10 GUT", ln=True, align="C")
-    pdf.ln(2)
-    pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
-    pdf.ln(5)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "📊 Gráfico Top 10 GUT", ln=True, align="C")
+                    pdf.ln(2)
+                    pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.ln(5)
                 if os.path.exists("linha_temp.png"):
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "📈 Gráfico de Evolução", ln=True, align="C")
-    pdf.ln(2)
-    pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.set_font("Arial", "B", 12)
+                    pdf.cell(0, 10, "📈 Gráfico de Evolução", ln=True, align="C")
+                    pdf.ln(2)
+                    pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
                 
                 for _, row in media_por_area.iterrows():
                     pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
