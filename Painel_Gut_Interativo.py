@@ -1,3 +1,13 @@
+aba1, aba2, aba3 = st.tabs(["📊 Radar", "💂 Matriz GUT", "📝 Plano de Ação"])
+
+with aba1:
+    st.subheader("Gráfico Radar (placeholder)")
+    st.write("Conteúdo da aba 1 será implementado aqui.")
+
+with aba3:
+    st.subheader("Plano de Ação (placeholder)")
+    st.write("Conteúdo da aba 3 será implementado aqui.")
+
 with aba2:
     st.subheader("Matriz GUT - Priorização das Dores (Treemap)")
 
@@ -15,7 +25,6 @@ with aba2:
     df_gut_filtrado = df_gut[(df_gut['Score'] >= score_min) & (df_gut['Score'] <= score_max)].copy()
     st.dataframe(df_gut_filtrado, use_container_width=True)
 
-    # Garante que as labels sejam strings seguras com score formatado
     df_gut_filtrado['Label'] = df_gut_filtrado.apply(lambda row: f"{row['Problema']} = {int(row['Score'])}", axis=1)
 
     fig_gut = go.Figure(go.Treemap(
@@ -58,7 +67,6 @@ with aba2:
         mime="image/png"
     )
 
-    # Exporta tabela com bordas para PDF se necessário
     if 'gerar_pdf_gut_com_borda' in st.session_state and st.session_state['gerar_pdf_gut_com_borda']:
         pdf.set_font("Arial", "B", 10)
         pdf.cell(60, 8, "Problema", border=1)
@@ -77,7 +85,6 @@ with aba2:
             pdf.cell(25, 8, str(row['Score']), border=1)
             pdf.ln()
 
-    # Exporta tabela do plano de ação com bordas para PDF se necessário
     if 'gerar_pdf_plano_com_borda' in st.session_state and st.session_state['gerar_pdf_plano_com_borda'] and 'df_filtrado' in locals():
         pdf.set_font("Arial", "B", 10)
         pdf.cell(90, 8, "Ação", border=1)
@@ -88,15 +95,15 @@ with aba2:
         pdf.set_font("Arial", "", 9)
         for _, row in df_filtrado.iterrows():
             if row['Prazo'] == '15 dias':
-                pdf.set_fill_color(139, 0, 0)  # vermelho escuro
+                pdf.set_fill_color(139, 0, 0)
             elif row['Prazo'] == '30 dias':
-                pdf.set_fill_color(255, 99, 71)  # vermelho claro
+                pdf.set_fill_color(255, 99, 71)
             elif row['Prazo'] == '60 dias':
-                pdf.set_fill_color(255, 165, 0)  # laranja
+                pdf.set_fill_color(255, 165, 0)
             elif row['Prazo'] == '90 dias':
-                pdf.set_fill_color(0, 128, 0)  # verde
+                pdf.set_fill_color(0, 128, 0)
             else:
-                pdf.set_fill_color(255, 255, 255)  # branco padrão
+                pdf.set_fill_color(255, 255, 255)
 
             pdf.cell(90, 8, str(row['Ação'])[:45], border=1, fill=True)
             pdf.cell(40, 8, str(row['Responsável']), border=1, fill=True)
