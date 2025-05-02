@@ -321,7 +321,8 @@ with aba4:
                 pdf.set_font("Arial", "B", 12)
                 pdf.cell(0, 10, f"{titulo}", ln=True, align="C")
                 pdf.ln(2)
-                pdf.image(imagem, x=40, y=pdf.get_y(), w=120)
+                pdf.ln(10)
+                pdf.image(imagem, x=60, y=pdf.get_y(), w=90)
             elif titulo == "Plano de Ação":
                 for _, row in df_filtrado.iterrows():
                     pdf.multi_cell(0, 10, f"- {row['Ação']} | Resp: {row['Responsável']} | Prazo: {row['Prazo']}")
@@ -330,7 +331,8 @@ with aba4:
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Imagem de Instrução", ln=True, align="C")
                     pdf.ln(2)
-                    pdf.image("img_instrucao_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.ln(10)
+                    pdf.image("img_instrucao_temp.png", x=60, y=pdf.get_y(), w=90)
                     pdf.ln(5)
                 pdf.multi_cell(0, 10, instrucoes_finais)
             elif titulo == "Gráficos Especiais":
@@ -343,13 +345,15 @@ with aba4:
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Gráfico Top 10 GUT", ln=True, align="C")
                     pdf.ln(2)
-                    pdf.image("top10_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.ln(10)
+                    pdf.image("top10_temp.png", x=60, y=pdf.get_y(), w=90)
                     pdf.ln(5)
                 if os.path.exists("linha_temp.png"):
                     pdf.set_font("Arial", "B", 12)
                     pdf.cell(0, 10, "Gráfico de Evolução", ln=True, align="C")
                     pdf.ln(2)
-                    pdf.image("linha_temp.png", x=40, y=pdf.get_y(), w=120)
+                    pdf.ln(10)
+                    pdf.image("linha_temp.png", x=60, y=pdf.get_y(), w=90)
                 
                 for _, row in media_por_area.iterrows():
                     pdf.multi_cell(0, 10, f"Área: {row['Área']} | Dep: {row['Departamento']} | Média: {round(row['Avaliação'],1)}")
