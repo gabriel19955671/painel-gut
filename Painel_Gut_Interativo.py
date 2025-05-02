@@ -266,12 +266,12 @@ with aba4:
 
         class FooterPDF(FPDF):
             def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.set_text_color(180, 180, 180)
-        self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
-        self.set_y(-10)
-        self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
+                self.set_y(-15)
+                self.set_font("Arial", "I", 8)
+                self.set_text_color(180, 180, 180)
+                self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
+                self.set_y(-10)
+                self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
         
         pdf = FooterPDF()
