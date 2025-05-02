@@ -26,6 +26,13 @@ if uploaded_logo:
         st.error(f"Erro ao processar a imagem: {e}")
 
 # TOPO COM LOGOMARCA FIXA
+st.sidebar.markdown("---")
+if st.sidebar.button("🔄 Limpar Cabeçalho e Logo"):
+    st.session_state['nome_cliente'] = ""
+    st.session_state['data_diagnostico'] = None
+    if os.path.exists("logo_cliente_temp.jpg"):
+        os.remove("logo_cliente_temp.jpg")
+    st.session_state['logo_cliente_path'] = ""
 topo1, topo2, topo3 = st.columns([1, 2, 1])
 with topo1:
     if os.path.exists("logo_PR_FIXA.png"):
