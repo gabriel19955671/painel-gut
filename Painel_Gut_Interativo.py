@@ -130,7 +130,7 @@ with aba1:
 
     fig_radar.update_layout(
         polar=dict(
-            bgcolor="lavender",
+            bgcolor="darkred",
             radialaxis=dict(visible=True, range=[0,10]),
             angularaxis=dict(tickfont=dict(size=14))
         ),
