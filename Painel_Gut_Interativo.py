@@ -265,7 +265,7 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         class FooterPDF(FPDF):
-    def footer(self):
+        def footer(self):
         self.set_y(-15)
         self.set_font("Arial", "I", 8)
         self.set_text_color(180, 180, 180)
@@ -274,21 +274,11 @@ with aba4:
         self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
         
-pdf = FooterPDF()
+        pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
 
-# Rodapé com numeração e marca d'água
-class FooterPDF(FPDF):
-    def footer(self):
-        self.set_y(-15)
-        self.set_font("Arial", "I", 8)
-        self.set_text_color(180, 180, 180)
-        self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
-        self.set_y(-10)
-        self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
 
-pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
         secoes = [("Diagnóstico 360º", "Capa")]
