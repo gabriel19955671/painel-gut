@@ -265,9 +265,23 @@ with aba4:
         fig_gut.write_image("gut_temp.png", width=600, height=400)
 
         pdf = FPDF()
+pdf.set_auto_page_break(auto=True, margin=15)
+pdf.alias_nb_pages()
+
+# Rodapé com numeração e marca d'água
+class FooterPDF(FPDF):
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", "I", 8)
+        self.set_text_color(180, 180, 180)
+        self.cell(0, 10, f"Página {self.page_no()} / {{nb}}", 0, 0, "C")
+        self.set_y(-10)
+        self.cell(0, 10, "Potencialize Resultados", 0, 0, "C")
+
+pdf = FooterPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.alias_nb_pages()
-        secoes = [("Sumário", None), ("Diagnóstico 360º", "Capa")]
+        secoes = [("Diagnóstico 360º", "Capa")]
 
         if opcoes_exportacao == "PDF Completo":
             secoes += [
@@ -282,15 +296,7 @@ with aba4:
 
         for titulo, imagem in secoes:
             pdf.add_page()
-            if titulo == "Sumário":
-                pdf.set_font("Arial", "B", 16)
-                pdf.cell(0, 10, "Sumário", ln=True, align="C")
-                pdf.ln(10)
-                for secao, _ in secoes[2:]:
-                    pdf.set_font("Arial", "", 12)
-                    pdf.cell(0, 10, f"- {secao}", ln=True)
-                continue
-            if imagem == "Capa":
+                        if imagem == "Capa":
                 if os.path.exists("logo_PR_FIXA.png"):
                     pdf.image("logo_PR_FIXA.png", x=10, y=8, w=70)
                 logo_cliente_path = st.session_state.get("logo_cliente_path", "")
